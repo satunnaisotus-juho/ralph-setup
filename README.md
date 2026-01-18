@@ -69,7 +69,7 @@ Default is 10 iterations.
 
 Ralph will:
 1. Create a feature branch (from PRD `branchName`)
-2. Pick the highest priority story where `passes: false`
+2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
 3. Implement that single story
 4. Run quality checks (typecheck, tests)
 5. Commit if checks pass

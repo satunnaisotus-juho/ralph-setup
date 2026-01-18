@@ -31,13 +31,14 @@ Take a PRD (markdown file or text) and convert it to `prd.json` in your ralph di
         "Criterion 2",
         "Typecheck passes"
       ],
-      "priority": 1,
       "passes": false,
       "notes": ""
     }
   ]
 }
 ```
+
+**Important:** The order of stories in prd.json does NOT imply priority. Ralph dynamically determines which story to work on next based on dependencies and codebase state.
 
 ---
 
@@ -62,19 +63,17 @@ Ralph spawns a fresh Claude Code instance per iteration with no memory of previo
 
 ---
 
-## Story Ordering: Dependencies First
+## Story Dependencies (Guidance)
 
-Stories execute in priority order. Earlier stories must not depend on later ones.
+Ralph dynamically picks which story to work on, but be aware of natural dependencies when writing stories:
 
-**Correct order:**
+**Typical dependency order:**
 1. Schema/database changes (migrations)
 2. Server actions / backend logic
 3. UI components that use the backend
 4. Dashboard/summary views that aggregate data
 
-**Wrong order:**
-1. UI component (depends on schema that does not exist yet)
-2. Schema change
+Ralph will analyze the codebase and pick stories whose dependencies are satisfied. You don't need to enforce order - just write good stories and Ralph figures it out.
 
 ---
 
@@ -118,10 +117,9 @@ Frontend stories are NOT complete until visually verified. Ralph will navigate t
 
 1. **Each user story becomes one JSON entry**
 2. **IDs**: Sequential (US-001, US-002, etc.)
-3. **Priority**: Based on dependency order, then document order
-4. **All stories**: `passes: false` and empty `notes`
-5. **branchName**: Derive from feature name, kebab-case, prefixed with `ralph/`
-6. **Always add**: "Typecheck passes" to every story's acceptance criteria
+3. **All stories**: `passes: false` and empty `notes`
+4. **branchName**: Derive from feature name, kebab-case, prefixed with `ralph/`
+5. **Always add**: "Typecheck passes" to every story's acceptance criteria
 
 ---
 
@@ -175,7 +173,6 @@ Add ability to mark tasks with different statuses.
         "Generate and run migration successfully",
         "Typecheck passes"
       ],
-      "priority": 1,
       "passes": false,
       "notes": ""
     },
@@ -189,7 +186,6 @@ Add ability to mark tasks with different statuses.
         "Typecheck passes",
         "Verify in browser"
       ],
-      "priority": 2,
       "passes": false,
       "notes": ""
     },
@@ -204,7 +200,6 @@ Add ability to mark tasks with different statuses.
         "Typecheck passes",
         "Verify in browser"
       ],
-      "priority": 3,
       "passes": false,
       "notes": ""
     },
@@ -218,7 +213,6 @@ Add ability to mark tasks with different statuses.
         "Typecheck passes",
         "Verify in browser"
       ],
-      "priority": 4,
       "passes": false,
       "notes": ""
     }
@@ -249,8 +243,6 @@ Before writing prd.json, verify:
 
 - [ ] **Previous run archived** (if prd.json exists with different branchName, archive it first)
 - [ ] Each story is completable in one iteration (small enough)
-- [ ] Stories are ordered by dependency (schema to backend to UI)
 - [ ] Every story has "Typecheck passes" as criterion
 - [ ] UI stories have "Verify in browser" as criterion
 - [ ] Acceptance criteria are verifiable (not vague)
-- [ ] No story depends on a later story

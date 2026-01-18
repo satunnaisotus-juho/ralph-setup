@@ -54,12 +54,13 @@ cd flowchart && npm run lint  # ESLint
       "id": "US-001",
       "title": "Story title",
       "acceptanceCriteria": ["Criterion 1"],
-      "priority": 1,
       "passes": false
     }
   ]
 }
 ```
+
+Note: The order of stories in prd.json does NOT imply priority. Ralph dynamically determines which story to work on next.
 
 ### State Files (gitignored)
 
@@ -76,7 +77,7 @@ Stories must be completable in ONE context window:
 
 ### Iteration Workflow
 1. Read `prd.json` and `progress.txt`
-2. Pick highest priority story where `passes: false`
+2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
 3. Implement, run quality checks, commit if passing
 4. Update `prd.json` to mark `passes: true`
 5. Append learnings to `progress.txt`

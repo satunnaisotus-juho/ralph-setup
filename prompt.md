@@ -7,13 +7,24 @@ You are an autonomous coding agent working on a software project.
 1. Read the PRD at `prd.json` (in the same directory as this file)
 2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
 3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
-4. Pick the **highest priority** user story where `passes: false`
+4. Pick the next user story to implement (see "Choosing the Next Story" below)
 5. Implement that single user story
 6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
 7. Update AGENTS.md files if you discover reusable patterns (see below)
 8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
 9. Update the PRD to set `passes: true` for the completed story
 10. Append your progress to `progress.txt`
+
+## Choosing the Next Story
+
+Select from stories where `passes: false`. **The order of stories in prd.json does NOT imply priority** - you must analyze and decide.
+
+Consider:
+1. **Dependencies** - What does this story need that doesn't exist yet? Pick stories whose dependencies are already satisfied.
+2. **Current codebase state** - What's already implemented? Build on existing work.
+3. **Learnings from progress.txt** - What did previous iterations discover? Use this context.
+
+Use your judgment. Schema/database work often needs to come before backend logic, which often needs to come before UI - but you decide based on the actual state of the code, not assumptions.
 
 ## Progress Report Format
 
