@@ -14,28 +14,27 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 - `jq` installed (`brew install jq` on macOS)
 - A git repository for your project
 
-## Setup
+## Quick Start
 
-### Option 1: Copy to your project
-
-Copy the ralph files into your project:
+Initialize Ralph in your project with a single command:
 
 ```bash
-# From your project root
-mkdir -p scripts/ralph
-cp /path/to/ralph/ralph.sh scripts/ralph/
-cp /path/to/ralph/prompt.md scripts/ralph/
-chmod +x scripts/ralph/ralph.sh
+# From the ralph directory
+./init-ralph.sh /path/to/your/project
 ```
 
-### Option 2: Install commands globally
+This copies all necessary files and sets up local Claude Code commands.
 
-Copy the commands to your Claude Code config for use across all projects:
+### Alternative: Install commands globally
+
+If you prefer to have Ralph commands available across all projects:
 
 ```bash
 mkdir -p ~/.claude/commands
 cp .claude/commands/*.md ~/.claude/commands/
 ```
+
+Note: You'll still need to copy `ralph.sh` and `prompt.md` to each project manually.
 
 ## Workflow
 
@@ -62,7 +61,7 @@ This creates `prd.json` with user stories structured for autonomous execution.
 ### 3. Run Ralph
 
 ```bash
-./scripts/ralph/ralph.sh [max_iterations]
+./ralph.sh [max_iterations]
 ```
 
 Default is 10 iterations.
