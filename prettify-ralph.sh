@@ -56,6 +56,18 @@ truncate() {
     fi
 }
 
+# Format token counts to human readable (41000 → "41K", 7253957 → "7.3M")
+format_tokens() {
+    local tokens=$1
+    if [ "$tokens" -ge 1000000 ]; then
+        printf "%.1fM" "$(echo "scale=1; $tokens / 1000000" | bc)"
+    elif [ "$tokens" -ge 1000 ]; then
+        printf "%.0fK" "$(echo "scale=0; $tokens / 1000" | bc)"
+    else
+        printf "%d" "$tokens"
+    fi
+}
+
 # Print session header banner
 print_session_banner() {
     local model="$1"
@@ -75,12 +87,27 @@ print_completion_banner() {
     local duration_ms="$1"
     local cost="$2"
     local turns="$3"
+    local output_tokens="$4"
+    local cache_read="$5"
+    local cache_written="$6"
 
     local duration=$(format_duration "$duration_ms")
+
+    # Calculate cache hit rate
+    local total_cache=$((cache_read + cache_written))
+    local hit_rate=0
+    if [ "$total_cache" -gt 0 ]; then
+        hit_rate=$(echo "scale=1; $cache_read * 100 / $total_cache" | bc)
+    fi
 
     echo ""
     printf "${GREEN}${BOLD}═══ SESSION COMPLETE ════════════════════════════════════════════════${RESET}\n"
     printf "Duration: %s | Turns: %s | Cost: \$%.2f\n" "$duration" "$turns" "$cost"
+    printf "Tokens: %s out | Cache: %s read, %s written (%.1f%% hit rate)\n" \
+        "$(format_tokens "$output_tokens")" \
+        "$(format_tokens "$cache_read")" \
+        "$(format_tokens "$cache_written")" \
+        "$hit_rate"
     printf "${GREEN}══════════════════════════════════════════════════════════════════════${RESET}\n"
     echo ""
 }
@@ -92,8 +119,13 @@ get_tool_display() {
 
     case "$name" in
         Bash)
+            local desc=$(echo "$input" | jq -r '.description // ""' 2>/dev/null)
             local cmd=$(echo "$input" | jq -r '.command // ""' 2>/dev/null)
-            truncate "$cmd" 60
+            if [ -n "$desc" ]; then
+                printf '"%s" %s' "$desc" "$cmd"
+            else
+                echo "$cmd"
+            fi
             ;;
         Read)
             local path=$(echo "$input" | jq -r '.file_path // ""' 2>/dev/null)
@@ -203,21 +235,32 @@ while IFS= read -r line; do
                     text)
                         # File read
                         file_path=$(echo "$line" | jq -r '.tool_use_result.file.filePath // ""')
-                        printf "  ${GREEN}✓${RESET} ${DIM}%s (%s)${RESET}\n" "$(basename "$file_path")" "$(format_bytes $content_len)"
+                        num_lines=$(echo "$line" | jq -r '.tool_use_result.file.numLines // 0')
+                        printf "  ${GREEN}✓${RESET} ${DIM}%s (%s lines, %s)${RESET}\n" "$(basename "$file_path")" "$num_lines" "$(format_bytes $content_len)"
                         ;;
                     create)
                         # File write
                         file_path=$(echo "$line" | jq -r '.tool_use_result.filePath // ""')
-                        printf "  ${GREEN}✓${RESET} ${DIM}Created %s${RESET}\n" "$(basename "$file_path")"
+                        file_content=$(echo "$line" | jq -r '.tool_use_result.content // ""')
+                        line_count=$(echo "$file_content" | wc -l)
+                        printf "  ${GREEN}✓${RESET} ${DIM}Created %s (%s lines)${RESET}\n" "$(basename "$file_path")" "$line_count"
                         ;;
                     update)
-                        # File edit
+                        # File edit - calculate +/- lines from structuredPatch
                         file_path=$(echo "$line" | jq -r '.tool_use_result.filePath // ""')
-                        printf "  ${GREEN}✓${RESET} ${DIM}Edited %s${RESET}\n" "$(basename "$file_path")"
+                        old_lines=$(echo "$line" | jq '[.tool_use_result.structuredPatch[]?.oldLines // 0] | add // 0')
+                        new_lines=$(echo "$line" | jq '[.tool_use_result.structuredPatch[]?.newLines // 0] | add // 0')
+                        printf "  ${GREEN}✓${RESET} ${DIM}Edited %s (+%s/-%s lines)${RESET}\n" "$(basename "$file_path")" "$new_lines" "$old_lines"
                         ;;
                     *)
                         # Generic success (Bash, TodoWrite, etc.)
-                        if [ "$content_len" -gt 0 ]; then
+                        # Check if this is a Bash result with stdout
+                        stdout=$(echo "$line" | jq -r '.tool_use_result.stdout // empty' 2>/dev/null)
+                        if [ -n "$stdout" ]; then
+                            line_count=$(echo "$stdout" | wc -l)
+                            byte_count=${#stdout}
+                            printf "  ${GREEN}✓${RESET} ${DIM}(%s lines, %s)${RESET}\n" "$line_count" "$(format_bytes $byte_count)"
+                        elif [ "$content_len" -gt 0 ]; then
                             printf "  ${GREEN}✓${RESET} ${DIM}(%s)${RESET}\n" "$(format_bytes $content_len)"
                         else
                             printf "  ${GREEN}✓${RESET}\n"
@@ -234,7 +277,10 @@ while IFS= read -r line; do
                 duration_ms=$(echo "$line" | jq -r '.duration_ms // 0')
                 cost=$(echo "$line" | jq -r '.total_cost_usd // 0')
                 turns=$(echo "$line" | jq -r '.num_turns // 0')
-                print_completion_banner "$duration_ms" "$cost" "$turns"
+                output_tokens=$(echo "$line" | jq -r '.usage.output_tokens // 0')
+                cache_read=$(echo "$line" | jq -r '.usage.cache_read_input_tokens // 0')
+                cache_written=$(echo "$line" | jq -r '.usage.cache_creation_input_tokens // 0')
+                print_completion_banner "$duration_ms" "$cost" "$turns" "$output_tokens" "$cache_read" "$cache_written"
             fi
             ;;
     esac
