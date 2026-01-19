@@ -6,7 +6,7 @@ Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/c
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
-[Read my in-depth article on how I use Ralph](https://x.com/ryancarson/status/2008548371712135632)
+[Read Ryan Carson's in-depth article on how he uses Ralph](https://x.com/ryancarson/status/2008548371712135632)
 
 ## Prerequisites
 
