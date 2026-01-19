@@ -66,6 +66,16 @@ This creates `prd.json` with user stories structured for autonomous execution.
 
 Default is 10 iterations.
 
+### Troubleshooting: Fix Inconsistencies
+
+If Ralph is behaving unexpectedly, use the fix-inconsistencies command to audit system files:
+
+```
+/ralph-fix-inconsistencies
+```
+
+This checks `ralph.sh`, `prompt.md`, `prd.json`, and `PRD.md` for alignment issues and fixes them.
+
 Ralph will:
 1. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
 2. Implement that single story
@@ -85,8 +95,12 @@ Ralph will:
 | `prd.json.example` | Example PRD format for reference |
 | `progress.txt` | Append-only learnings for future iterations |
 | `prettify-ralph.sh` | Log prettifier for monitoring Ralph in real-time |
+| `init-ralph.sh` | Initializes Ralph in a new project directory |
+| `CLAUDE.md` | Project context for Claude Code |
+| `AGENTS.md` | Instructions for Ralph agent iterations |
 | `.claude/commands/prd.md` | Command for generating PRDs |
 | `.claude/commands/ralph.md` | Command for converting PRDs to JSON |
+| `.claude/commands/ralph-fix-inconsistencies.md` | Command for auditing system file consistency |
 | `flowchart/` | Interactive visualization of how Ralph works |
 
 ## Flowchart
