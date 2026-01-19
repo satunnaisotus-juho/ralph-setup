@@ -48,11 +48,16 @@ START_TIME=$SECONDS
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PRD_FILE="$SCRIPT_DIR/prd.json"
 PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
+RALPH_LOG="$SCRIPT_DIR/ralph-log.json"
 
 # Initialize progress file if it doesn't exist
 if [ ! -f "$PROGRESS_FILE" ]; then
   reset_progress_file
 fi
+
+# Initialize ralph log (overwrite any existing)
+> "$RALPH_LOG"
+echo "Ralph log initialized: $RALPH_LOG"
 
 echo "Starting Ralph - Max iterations: $MAX_ITERATIONS"
 
@@ -65,15 +70,14 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "  Ralph Iteration $i of $MAX_ITERATIONS  [elapsed: $(format_duration $ELAPSED)]"
   echo "═══════════════════════════════════════════════════════"
 
-  # Run claude with the ralph prompt
-  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude --dangerously-skip-permissions -p 2>&1 | tee /dev/stderr) || true
+  # Run claude with the ralph prompt (streaming JSON to log file)
+  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude --verbose --output-format stream-json --dangerously-skip-permissions -p 2>&1 | tee >(cat >> "$RALPH_LOG") | tee /dev/stderr) || true
 
   ITER_DURATION=$((SECONDS - ITER_START))
   ELAPSED=$((SECONDS - START_TIME))
 
-  # Check for completion signal (must be on its own line to avoid false positives
-  # when the agent mentions the signal in reasoning)
-  if echo "$OUTPUT" | grep -q "^<promise>COMPLETE</promise>$"; then
+  # Check for completion signal (searches within JSON output)
+  if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
     echo ""
     echo "═══════════════════════════════════════════════════════"
     echo "  Ralph completed all tasks!"

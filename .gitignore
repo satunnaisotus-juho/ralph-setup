@@ -1,2 +1,5 @@
 # OS files
 .DS_Store
+
+# Ralph streaming log
+ralph-log.json
