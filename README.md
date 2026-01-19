@@ -84,6 +84,7 @@ Ralph will:
 | `prd.json` | User stories with `passes` status (the task list) |
 | `prd.json.example` | Example PRD format for reference |
 | `progress.txt` | Append-only learnings for future iterations |
+| `prettify-ralph.sh` | Log prettifier for monitoring Ralph in real-time |
 | `.claude/commands/prd.md` | Command for generating PRDs |
 | `.claude/commands/ralph.md` | Command for converting PRDs to JSON |
 | `flowchart/` | Interactive visualization of how Ralph works |
@@ -149,6 +150,28 @@ Frontend stories must include "Verify in browser" in acceptance criteria. Ralph 
 ### Stop Condition
 
 When all stories have `passes: true`, Ralph outputs `<promise>COMPLETE</promise>` and the loop exits.
+
+## Monitoring Ralph
+
+While Ralph is running, you can watch its progress in real-time with the log prettifier:
+
+```bash
+# In a separate terminal, tail the log with pretty formatting
+tail -f ralph-log.json | ./prettify-ralph.sh
+```
+
+This shows a Claude Code-like view with:
+- Session banners (model, working directory)
+- Claude's thoughts and reasoning
+- Tool calls (Read, Write, Edit, Bash, etc.)
+- Results with success/error indicators
+- Completion stats (duration, cost, turns)
+
+You can also review a completed log:
+
+```bash
+cat ralph-log.json | ./prettify-ralph.sh
+```
 
 ## Debugging
 
