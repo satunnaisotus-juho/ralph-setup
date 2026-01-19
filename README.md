@@ -43,7 +43,7 @@ Note: You'll still need to copy `ralph.sh` and `prompt.md` to each project manua
 Use the PRD command to generate a detailed requirements document:
 
 ```
-/prd [your feature description]
+/ralph-prd [your feature description]
 ```
 
 Answer the clarifying questions. The command saves output to `tasks/prd-[feature-name].md`.
@@ -98,7 +98,7 @@ Ralph will:
 | `init-ralph.sh` | Initializes Ralph in a new project directory |
 | `CLAUDE.md` | Project context for Claude Code |
 | `AGENTS.md` | Instructions for Ralph agent iterations |
-| `.claude/commands/prd.md` | Command for generating PRDs |
+| `.claude/commands/ralph-prd.md` | Command for generating PRDs |
 | `.claude/commands/ralph.md` | Command for converting PRDs to JSON |
 | `.claude/commands/ralph-fix-inconsistencies.md` | Command for auditing system file consistency |
 | `flowchart/` | Interactive visualization of how Ralph works |

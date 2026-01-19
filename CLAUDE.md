@@ -37,7 +37,7 @@ cd flowchart && npm run lint  # ESLint
 2. **prompt.md** - Instructions for each Claude Code iteration defining the agent workflow
 
 3. **.claude/commands/** - Claude Code command definitions:
-   - `prd.md` - Generates structured PRD from feature description
+   - `ralph-prd.md` - Generates structured PRD from feature description
    - `ralph.md` - Converts markdown PRD to `prd.json` format
    - `ralph-fix-inconsistencies.md` - Audits Ralph system files for consistency
 
