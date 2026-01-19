@@ -76,6 +76,35 @@ This asks for your GitHub username and repository name, then creates an initial 
 
 Default is 10 iterations.
 
+## Remote Deployment (Unsecured System)
+
+If you want to run Ralph on a separate unsecured system (e.g., with `--dangerously-skip-permissions`), you can deploy with scoped access using SSH deploy keys:
+
+```bash
+./init-ralph.sh /path/to/project user@remote-host /remote/path
+```
+
+This will:
+1. Generate a project-specific SSH deploy key
+2. Add it to GitHub (requires `gh` CLI, or shows manual instructions)
+3. Transfer the private key to the remote system's `~/.ssh/`
+4. Copy Ralph files to the remote system
+5. Initialize git on the remote, create initial commit, and push
+
+**Prerequisites:**
+- SSH access to the remote system
+- `gh` CLI (optional, for automatic deploy key setup)
+- A GitHub repository URL (you'll be prompted if not already configured)
+
+The deploy key grants access **only to that specific repository**, not your other repos. This is safer than giving the unsecured system your main SSH keys.
+
+After deployment, run Ralph on the remote system:
+```bash
+ssh user@remote-host
+cd /remote/path/your-project
+./ralph.sh
+```
+
 ### Troubleshooting: Fix Inconsistencies
 
 If Ralph is behaving unexpectedly, use the fix-inconsistencies command to audit system files:
