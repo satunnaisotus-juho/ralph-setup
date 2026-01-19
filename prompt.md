@@ -15,6 +15,7 @@ You are an autonomous coding agent working on a software project.
 9. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
 10. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) using the commit format below
 11. Push the commit to the remote repository with: `git push`
+12. **STOP.** End your response now. Another iteration will handle the next story.
 
 ## Choosing the Next Story
 
@@ -205,18 +206,18 @@ A frontend story is NOT complete until browser verification passes.
 
 ## Stop Condition
 
-After completing a user story, check if ALL stories have `passes: true`.
+After completing ONE user story:
+1. If ALL stories have `passes: true` → Output `<promise>COMPLETE</promise>` on its own line
+2. If ANY stories have `passes: false` → **STOP immediately.** End your response now.
 
-If ALL stories are complete and passing, reply with the completion signal **on its own line**:
-<promise>COMPLETE</promise>
-
-If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
+**Critical:** Do NOT loop back to pick another story. Do NOT continue working. A fresh Claude instance will be spawned for the next story with clean context.
 
 **Important:** Do NOT mention or quote the completion signal in your reasoning or explanations. The signal is detected by pattern matching, so any mention of it (even in quotes or when explaining what you should NOT do) will trigger false completion.
 
 ## Important
 
-- Work on ONE story per iteration
+**ONE story per iteration.** After committing, stop immediately - do not pick another story.
+
 - Commit frequently
 - Keep CI green
 - Read the Codebase Patterns section in progress.txt before starting

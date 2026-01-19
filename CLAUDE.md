@@ -79,7 +79,8 @@ Stories must be completable in ONE context window:
 3. Implement, run quality checks, commit if passing
 4. Update `prd.json` to mark `passes: true`
 5. Append learnings to `progress.txt`
-6. Output `<promise>COMPLETE</promise>` when all done
+6. **STOP** - one story per iteration (a fresh Claude instance handles the next)
+7. Output `<promise>COMPLETE</promise>` only when ALL stories pass
 
 ### AGENTS.md Updates
 Discovered patterns should be added to relevant `AGENTS.md` files for future iterations.
