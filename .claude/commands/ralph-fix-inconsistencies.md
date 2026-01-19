@@ -16,7 +16,7 @@ Read and cross-reference these files:
 2. **prompt.md** - Instructions given to each Ralph iteration
 3. **prd.json** - The structured task list with user stories
 4. **PRD.md** - The human-readable Product Requirements Document (if exists)
-5. **.claude/commands/ralph.md** - The PRD converter command
+5. **.claude/commands/ralph-prd-to-json.md** - The PRD converter command
 6. **progress.txt** - The progress log
 
 ---

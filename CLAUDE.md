@@ -29,8 +29,9 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
 3. **.claude/commands/** - Claude Code command definitions:
    - `ralph-prd.md` - Generates structured PRD from feature description
-   - `ralph.md` - Converts markdown PRD to `prd.json` format
+   - `ralph-prd-to-json.md` - Converts markdown PRD to `prd.json` format
    - `ralph-fix-inconsistencies.md` - Audits Ralph system files for consistency
+   - `ralph-git-init.md` - Initialize git repository and push to GitHub
 
 ### PRD Format (`prd.json`)
 

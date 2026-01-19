@@ -53,12 +53,22 @@ Answer the clarifying questions. The command saves output to `PRD.md`.
 Use the Ralph command to convert the markdown PRD to JSON:
 
 ```
-/ralph PRD.md
+/ralph-prd-to-json PRD.md
 ```
 
 This creates `prd.json` with user stories structured for autonomous execution.
 
-### 3. Run Ralph
+### 3. Initialize Git and Push to GitHub
+
+If this is a new project, initialize git and push to GitHub:
+
+```
+/ralph-git-init
+```
+
+This asks for your GitHub username and repository name, then creates an initial commit with your PRD and pushes to GitHub.
+
+### 4. Run Ralph
 
 ```bash
 ./ralph.sh [max_iterations]
@@ -99,8 +109,9 @@ Ralph will:
 | `CLAUDE.md` | Project context for Claude Code |
 | `AGENTS.md` | Instructions for Ralph agent iterations |
 | `.claude/commands/ralph-prd.md` | Command for generating PRDs |
-| `.claude/commands/ralph.md` | Command for converting PRDs to JSON |
+| `.claude/commands/ralph-prd-to-json.md` | Command for converting PRDs to JSON |
 | `.claude/commands/ralph-fix-inconsistencies.md` | Command for auditing system file consistency |
+| `.claude/commands/ralph-git-init.md` | Command for initializing git and pushing to GitHub |
 
 ## Critical Concepts
 
