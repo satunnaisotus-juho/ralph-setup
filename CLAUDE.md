@@ -10,15 +10,6 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
 ## Commands
 
-### Flowchart (React visualization)
-
-```bash
-cd flowchart && npm install   # Install dependencies
-cd flowchart && npm run dev   # Development server with HMR
-cd flowchart && npm run build # Production build (tsc -b && vite build)
-cd flowchart && npm run lint  # ESLint
-```
-
 ### Ralph Agent Loop
 
 ```bash
@@ -40,8 +31,6 @@ cd flowchart && npm run lint  # ESLint
    - `ralph-prd.md` - Generates structured PRD from feature description
    - `ralph.md` - Converts markdown PRD to `prd.json` format
    - `ralph-fix-inconsistencies.md` - Audits Ralph system files for consistency
-
-4. **flowchart/** - Interactive React Flow visualization deployed to GitHub Pages at `/ralph/`
 
 ### PRD Format (`prd.json`)
 
