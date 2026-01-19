@@ -99,6 +99,13 @@ Each criterion must be something Ralph can CHECK, not something vague.
 "Typecheck passes"
 ```
 
+**Adapt terminology to the project's tooling:**
+- TypeScript/JavaScript: "Typecheck passes"
+- PHP: "PHPStan analysis passes"
+- Python: "Mypy passes"
+- Go: "go vet passes"
+- Rust: "cargo check passes"
+
 For stories with testable logic, also include:
 ```
 "Tests pass"
@@ -233,7 +240,7 @@ Add ability to mark tasks with different statuses.
    - Copy current `prd.json` and `progress.txt` to archive
    - Reset `progress.txt` with fresh header
 
-**The ralph.sh script handles this automatically** when you run it, but if you are manually updating prd.json between runs, archive first.
+**The ralph.sh script handles this automatically** when you run it by using backup files (`.prd.json.bak` and `.progress.txt.bak`). If you are manually updating prd.json between runs, archive first.
 
 ---
 

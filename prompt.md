@@ -5,15 +5,16 @@ You are an autonomous coding agent working on a software project.
 ## Your Task
 
 1. Read the PRD at `prd.json` (in the same directory as this file)
-2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
-3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
-4. Pick the next user story to implement (see "Choosing the Next Story" below)
-5. Implement that single user story
-6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
-7. Update AGENTS.md files if you discover reusable patterns (see below)
-8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
+2. If `PRD.md` exists, skim it for technical context (architecture, APIs, non-functional requirements)
+3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
+4. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main (or master if main doesn't exist).
+5. Pick the next user story to implement (see "Choosing the Next Story" below)
+6. Implement that single user story
+7. Run quality checks and functional verification (see "Pre-Commit Checklist")
+8. Update AGENTS.md files if you discover reusable patterns (see below)
 9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `progress.txt`
+10. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
+11. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) with message: `feat: [Story ID] - [Story Title]`
 
 ## Choosing the Next Story
 
@@ -25,6 +26,38 @@ Consider:
 3. **Learnings from progress.txt** - What did previous iterations discover? Use this context.
 
 Use your judgment. Schema/database work often needs to come before backend logic, which often needs to come before UI - but you decide based on the actual state of the code, not assumptions.
+
+## Pre-Commit Checklist
+
+**ALL checks must pass. No exceptions. Do NOT commit if any check fails.**
+
+### 1. Static Analysis
+
+Run your project's static analysis tools:
+- Lint checks must pass
+- Type checks must pass (TypeScript, PHPStan, mypy, etc.)
+
+### 2. Tests
+
+**ALL tests MUST pass.**
+
+- If a test fails, fix the code OR fix the test if it's genuinely wrong
+- Do NOT skip, ignore, or rationalize failing tests
+- Do NOT commit with any failing tests
+
+### 3. Functional Verification (if applicable)
+
+For stories that change behavior, verify acceptance criteria work in practice:
+- Run the application if needed
+- Test the specific feature/fix manually
+- For UI changes, verify in browser
+
+### 4. Final Review
+
+```bash
+git status   # Verify only expected files changed
+git diff     # Review all changes match story scope
+```
 
 ## Progress Report Format
 
@@ -102,10 +135,12 @@ A frontend story is NOT complete until browser verification passes.
 
 After completing a user story, check if ALL stories have `passes: true`.
 
-If ALL stories are complete and passing, reply with:
+If ALL stories are complete and passing, reply with the completion signal **on its own line**:
 <promise>COMPLETE</promise>
 
 If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
+
+**Important:** Do NOT mention or quote the completion signal in your reasoning or explanations. The signal is detected by pattern matching, so any mention of it (even in quotes or when explaining what you should NOT do) will trigger false completion.
 
 ## Important
 

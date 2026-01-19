@@ -32,14 +32,16 @@ cd flowchart && npm run lint  # ESLint
 1. **ralph.sh** - Bash orchestration loop that:
    - Archives previous runs when branch changes (to `archive/YYYY-MM-DD-feature-name/`)
    - Spawns fresh Claude Code instances with `prompt.md`
-   - Checks for `<promise>COMPLETE</promise>` completion signal
-   - Tracks state via `.last-branch` file
+   - Checks for `<promise>COMPLETE</promise>` completion signal (must be on its own line)
+   - Tracks state via `.last-branch` and backup files
+   - Displays elapsed time and iteration duration
 
 2. **prompt.md** - Instructions for each Claude Code iteration defining the agent workflow
 
 3. **.claude/commands/** - Claude Code command definitions:
    - `prd.md` - Generates structured PRD from feature description
    - `ralph.md` - Converts markdown PRD to `prd.json` format
+   - `ralph-fix-inconsistencies.md` - Audits Ralph system files for consistency
 
 4. **flowchart/** - Interactive React Flow visualization deployed to GitHub Pages at `/ralph/`
 
@@ -62,11 +64,16 @@ cd flowchart && npm run lint  # ESLint
 
 Note: The order of stories in prd.json does NOT imply priority. Ralph dynamically determines which story to work on next.
 
-### State Files (gitignored)
+### State Files
 
+**Tracked (committed to git):**
 - `prd.json` - Task list with user stories and `passes` status
 - `progress.txt` - Append-only learnings log
+
+**Internal (gitignored):**
 - `.last-branch` - Tracks current feature branch
+- `.prd.json.bak` - Backup for archiving across sessions
+- `.progress.txt.bak` - Backup for archiving across sessions
 
 ## Key Patterns
 

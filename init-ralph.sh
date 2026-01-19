@@ -70,23 +70,26 @@ echo "  - .claude/commands/prd.md"
 cp "$SCRIPT_DIR/.claude/commands/ralph.md" "$TARGET_DIR/.claude/commands/ralph.md"
 echo "  - .claude/commands/ralph.md"
 
+cp "$SCRIPT_DIR/.claude/commands/ralph-fix-inconsistencies.md" "$TARGET_DIR/.claude/commands/ralph-fix-inconsistencies.md"
+echo "  - .claude/commands/ralph-fix-inconsistencies.md"
+
 cp "$SCRIPT_DIR/.claude/settings.local.json" "$TARGET_DIR/.claude/settings.local.json"
 echo "  - .claude/settings.local.json"
 
 # Update .gitignore
 echo "Updating .gitignore..."
 
-GITIGNORE_ENTRIES="# Ralph state files
-prd.json
-progress.txt
+GITIGNORE_ENTRIES="# Ralph internal state files (not prd.json/progress.txt - those are tracked)
 .last-branch
+.prd.json.bak
+.progress.txt.bak
 archive/"
 
 GITIGNORE_FILE="$TARGET_DIR/.gitignore"
 
 if [ -f "$GITIGNORE_FILE" ]; then
   # Check if Ralph entries already exist
-  if grep -q "# Ralph state files" "$GITIGNORE_FILE"; then
+  if grep -q "# Ralph" "$GITIGNORE_FILE"; then
     echo "  - .gitignore already has Ralph entries, skipping"
   else
     echo "" >> "$GITIGNORE_FILE"
