@@ -13,7 +13,8 @@ You are an autonomous coding agent working on a software project.
 7. Update AGENTS.md files if you discover reusable patterns (see below)
 8. Update the PRD to set `passes: true` for the completed story
 9. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
-10. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) with message: `feat: [Story ID] - [Story Title]`
+10. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) using the commit format below
+11. Push the commit to the remote repository with: `git push`
 
 ## Choosing the Next Story
 
@@ -56,6 +57,78 @@ For stories that change behavior, verify acceptance criteria work in practice:
 ```bash
 git status   # Verify only expected files changed
 git diff     # Review all changes match story scope
+```
+
+## Commit Message Format
+
+Use this format for all commits:
+
+```
+feat: [Story ID] - [Story Title]
+
+## Summary
+[Brief summary of what was implemented - 2-3 sentences describing the actual changes]
+
+## Story Goal
+[The user story's goal/description from prd.json - the "why" behind this work]
+
+## Changes
+- [File 1]: [What changed and why]
+- [File 2]: [What changed and why]
+- ...
+
+## Acceptance Criteria Met
+- [x] [Criterion 1]
+- [x] [Criterion 2]
+- ...
+
+## Testing
+- [How the changes were verified - tests run, manual testing performed, etc.]
+
+## Notes
+- [Any gotchas, decisions made, or context for future developers]
+- [Omit this section if nothing notable]
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+```
+
+### Example Commit Message
+
+```
+feat: US-003 - Add product search functionality
+
+## Summary
+Implemented product search with fuzzy matching and filters. Added search
+input component to header, created search API endpoint with pagination,
+and integrated results display with infinite scroll.
+
+## Story Goal
+As a customer, I want to search for products by name or description so
+that I can quickly find what I'm looking for.
+
+## Changes
+- src/components/SearchInput.tsx: New search input with debounced queries
+- src/api/search.ts: Search endpoint with fuzzy matching via pg_trgm
+- src/pages/search.tsx: Search results page with filters and infinite scroll
+- src/lib/db/migrations/003_search_index.sql: Added trigram index for performance
+
+## Acceptance Criteria Met
+- [x] Search input visible in header on all pages
+- [x] Results update as user types (debounced 300ms)
+- [x] Can filter by category and price range
+- [x] Pagination works with 20 items per page
+- [x] Typecheck passes
+
+## Testing
+- Ran full test suite: `npm test` - all 47 tests pass
+- Manual testing: searched for partial product names, verified fuzzy matching
+- Tested edge cases: empty query, special characters, no results
+
+## Notes
+- Used pg_trgm extension for fuzzy search - requires `CREATE EXTENSION pg_trgm`
+- Debounce delay of 300ms chosen to balance responsiveness vs API load
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ```
 
 ## Progress Report Format

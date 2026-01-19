@@ -85,8 +85,27 @@ Stories must be completable in ONE context window:
 Discovered patterns should be added to relevant `AGENTS.md` files for future iterations.
 
 ### Commit Format
+Commits should include detailed context. See `prompt.md` for the full template. Summary:
 ```
 feat: [Story ID] - [Story Title]
+
+## Summary
+[What was implemented]
+
+## Story Goal
+[The "why" from prd.json]
+
+## Changes
+- [File]: [What changed]
+
+## Acceptance Criteria Met
+- [x] [Criteria from story]
+
+## Testing
+- [How verified]
+
+## Notes (optional)
+- [Gotchas, decisions]
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ```
