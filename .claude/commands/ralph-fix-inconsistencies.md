@@ -18,7 +18,6 @@ Read and cross-reference these files:
 4. **PRD.md** - The human-readable Product Requirements Document (if exists)
 5. **.claude/commands/ralph.md** - The PRD converter command
 6. **progress.txt** - The progress log
-7. **.gitignore** - Ensure Ralph state files are ignored
 
 ---
 
@@ -27,22 +26,13 @@ Read and cross-reference these files:
 ### 1. File Format Consistency
 - Does `progress.txt` match the format that `ralph.sh` generates via `reset_progress_file()`?
 - Does the story count in `progress.txt` match the actual count in `prd.json`?
-- Are all backup/state files listed in `.gitignore`?
 
 ### 2. Cross-File References
 - Does `prompt.md` reference the correct file names?
 - Are acceptance criteria terminology consistent across files?
 - Does the story count in `prd.json` match what's documented in `PRD.md`?
 
-### 3. Archive Mechanism
-- Does `ralph.sh` properly handle backup files for archiving?
-- Is the archiving documentation in `ralph.md` accurate?
-
-### 4. State Files
-- Are all state files (.last-branch, .prd.json.bak, .progress.txt.bak) in `.gitignore`?
-- Is branch handling logic in `prompt.md` clear?
-
-### 5. Completion Signal
+### 3. Completion Signal
 - Does the completion signal pattern in `ralph.sh` match what's documented in `prompt.md`?
 - Is the warning about not quoting the signal present?
 

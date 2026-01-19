@@ -30,10 +30,8 @@ cd flowchart && npm run lint  # ESLint
 ### Core Components
 
 1. **ralph.sh** - Bash orchestration loop that:
-   - Archives previous runs when branch changes (to `archive/YYYY-MM-DD-feature-name/`)
    - Spawns fresh Claude Code instances with `prompt.md`
    - Checks for `<promise>COMPLETE</promise>` completion signal (must be on its own line)
-   - Tracks state via `.last-branch` and backup files
    - Displays elapsed time and iteration duration
 
 2. **prompt.md** - Instructions for each Claude Code iteration defining the agent workflow
@@ -50,7 +48,6 @@ cd flowchart && npm run lint  # ESLint
 ```json
 {
   "project": "ProjectName",
-  "branchName": "ralph/feature-name",
   "userStories": [
     {
       "id": "US-001",
@@ -66,14 +63,8 @@ Note: The order of stories in prd.json does NOT imply priority. Ralph dynamicall
 
 ### State Files
 
-**Tracked (committed to git):**
 - `prd.json` - Task list with user stories and `passes` status
 - `progress.txt` - Append-only learnings log
-
-**Internal (gitignored):**
-- `.last-branch` - Tracks current feature branch
-- `.prd.json.bak` - Backup for archiving across sessions
-- `.progress.txt.bak` - Backup for archiving across sessions
 
 ## Key Patterns
 

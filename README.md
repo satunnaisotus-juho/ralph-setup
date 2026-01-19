@@ -67,14 +67,13 @@ This creates `prd.json` with user stories structured for autonomous execution.
 Default is 10 iterations.
 
 Ralph will:
-1. Create a feature branch (from PRD `branchName`)
-2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
-3. Implement that single story
-4. Run quality checks (typecheck, tests)
-5. Commit if checks pass
-6. Update `prd.json` to mark story as `passes: true`
-7. Append learnings to `progress.txt`
-8. Repeat until all stories pass or max iterations reached
+1. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
+2. Implement that single story
+3. Run quality checks (typecheck, tests)
+4. Commit if checks pass
+5. Update `prd.json` to mark story as `passes: true`
+6. Append learnings to `progress.txt`
+7. Repeat until all stories pass or max iterations reached
 
 ## Key Files
 
@@ -172,10 +171,6 @@ Edit `prompt.md` to customize Ralph's behavior for your project:
 - Add project-specific quality check commands
 - Include codebase conventions
 - Add common gotchas for your stack
-
-## Archiving
-
-Ralph automatically archives previous runs when you start a new feature (different `branchName`). Archives are saved to `archive/YYYY-MM-DD-feature-name/`.
 
 ## References
 

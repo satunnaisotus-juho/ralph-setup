@@ -79,26 +79,23 @@ echo "  - .claude/settings.local.json"
 # Update .gitignore
 echo "Updating .gitignore..."
 
-GITIGNORE_ENTRIES="# Ralph internal state files (not prd.json/progress.txt - those are tracked)
-.last-branch
-.prd.json.bak
-.progress.txt.bak
-archive/"
+GITIGNORE_ENTRIES="# OS files
+.DS_Store"
 
 GITIGNORE_FILE="$TARGET_DIR/.gitignore"
 
 if [ -f "$GITIGNORE_FILE" ]; then
-  # Check if Ralph entries already exist
-  if grep -q "# Ralph" "$GITIGNORE_FILE"; then
-    echo "  - .gitignore already has Ralph entries, skipping"
+  # Check if .DS_Store already ignored
+  if grep -q ".DS_Store" "$GITIGNORE_FILE"; then
+    echo "  - .gitignore already has .DS_Store entry, skipping"
   else
     echo "" >> "$GITIGNORE_FILE"
     echo "$GITIGNORE_ENTRIES" >> "$GITIGNORE_FILE"
-    echo "  - Added Ralph entries to existing .gitignore"
+    echo "  - Added .DS_Store to existing .gitignore"
   fi
 else
   echo "$GITIGNORE_ENTRIES" > "$GITIGNORE_FILE"
-  echo "  - Created .gitignore with Ralph entries"
+  echo "  - Created .gitignore"
 fi
 
 # Print success message

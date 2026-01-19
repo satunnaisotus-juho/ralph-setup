@@ -7,14 +7,13 @@ You are an autonomous coding agent working on a software project.
 1. Read the PRD at `prd.json` (in the same directory as this file)
 2. If `PRD.md` exists, skim it for technical context (architecture, APIs, non-functional requirements)
 3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
-4. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main (or master if main doesn't exist).
-5. Pick the next user story to implement (see "Choosing the Next Story" below)
-6. Implement that single user story
-7. Run quality checks and functional verification (see "Pre-Commit Checklist")
-8. Update AGENTS.md files if you discover reusable patterns (see below)
-9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
-11. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) with message: `feat: [Story ID] - [Story Title]`
+4. Pick the next user story to implement (see "Choosing the Next Story" below)
+5. Implement that single user story
+6. Run quality checks and functional verification (see "Pre-Commit Checklist")
+7. Update AGENTS.md files if you discover reusable patterns (see below)
+8. Update the PRD to set `passes: true` for the completed story
+9. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
+10. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) with message: `feat: [Story ID] - [Story Title]`
 
 ## Choosing the Next Story
 

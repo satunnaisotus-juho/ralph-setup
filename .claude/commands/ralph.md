@@ -19,7 +19,6 @@ Take a PRD (markdown file or text) and convert it to `prd.json` in your ralph di
 ```json
 {
   "project": "[Project Name]",
-  "branchName": "ralph/[feature-name-kebab-case]",
   "description": "[Feature description from PRD title/intro]",
   "userStories": [
     {
@@ -125,8 +124,7 @@ Frontend stories are NOT complete until visually verified. Ralph will navigate t
 1. **Each user story becomes one JSON entry**
 2. **IDs**: Sequential (US-001, US-002, etc.)
 3. **All stories**: `passes: false` and empty `notes`
-4. **branchName**: Derive from feature name, kebab-case, prefixed with `ralph/`
-5. **Always add**: "Typecheck passes" to every story's acceptance criteria
+4. **Always add**: "Typecheck passes" to every story's acceptance criteria
 
 ---
 
@@ -168,7 +166,6 @@ Add ability to mark tasks with different statuses.
 ```json
 {
   "project": "TaskApp",
-  "branchName": "ralph/task-status",
   "description": "Task Status Feature - Track task progress with status indicators",
   "userStories": [
     {
@@ -229,26 +226,10 @@ Add ability to mark tasks with different statuses.
 
 ---
 
-## Archiving Previous Runs
-
-**Before writing a new prd.json, check if there is an existing one from a different feature:**
-
-1. Read the current `prd.json` if it exists
-2. Check if `branchName` differs from the new feature's branch name
-3. If different AND `progress.txt` has content beyond the header:
-   - Create archive folder: `archive/YYYY-MM-DD-feature-name/`
-   - Copy current `prd.json` and `progress.txt` to archive
-   - Reset `progress.txt` with fresh header
-
-**The ralph.sh script handles this automatically** when you run it by using backup files (`.prd.json.bak` and `.progress.txt.bak`). If you are manually updating prd.json between runs, archive first.
-
----
-
 ## Checklist Before Saving
 
 Before writing prd.json, verify:
 
-- [ ] **Previous run archived** (if prd.json exists with different branchName, archive it first)
 - [ ] Each story is completable in one iteration (small enough)
 - [ ] Every story has "Typecheck passes" as criterion
 - [ ] UI stories have "Verify in browser" as criterion

@@ -1,10 +1,2 @@
-# Ralph internal state files (not prd.json/progress.txt - those are tracked)
-.last-branch
-.prd.json.bak
-.progress.txt.bak
-
-# Archive is optional to commit
-# archive/
-
 # OS files
 .DS_Store
