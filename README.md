@@ -46,14 +46,14 @@ Use the PRD command to generate a detailed requirements document:
 /ralph-prd [your feature description]
 ```
 
-Answer the clarifying questions. The command saves output to `tasks/prd-[feature-name].md`.
+Answer the clarifying questions. The command saves output to `PRD.md`.
 
 ### 2. Convert PRD to Ralph format
 
 Use the Ralph command to convert the markdown PRD to JSON:
 
 ```
-/ralph tasks/prd-[feature-name].md
+/ralph PRD.md
 ```
 
 This creates `prd.json` with user stories structured for autonomous execution.
