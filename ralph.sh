@@ -70,8 +70,8 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "  Ralph Iteration $i of $MAX_ITERATIONS  [elapsed: $(format_duration $ELAPSED)]"
   echo "═══════════════════════════════════════════════════════"
 
-  # Run claude with the ralph prompt (streaming JSON to log file)
-  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude --verbose --output-format stream-json --dangerously-skip-permissions -p 2>&1 | tee >(cat >> "$RALPH_LOG") | tee /dev/stderr) || true
+  # Run claude with the ralph prompt (streaming JSON to log file only)
+  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | claude --verbose --output-format stream-json --dangerously-skip-permissions -p 2>&1 | tee >(cat >> "$RALPH_LOG")) || true
 
   ITER_DURATION=$((SECONDS - ITER_START))
   ELAPSED=$((SECONDS - START_TIME))
