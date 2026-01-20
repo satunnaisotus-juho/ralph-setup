@@ -81,6 +81,9 @@ echo "  - .claude/commands/ralph-prd.md"
 cp "$SCRIPT_DIR/.claude/commands/ralph-prd-to-json.md" "$TARGET_DIR/.claude/commands/ralph-prd-to-json.md"
 echo "  - .claude/commands/ralph-prd-to-json.md"
 
+cp "$SCRIPT_DIR/.claude/commands/ralph-analyze.md" "$TARGET_DIR/.claude/commands/ralph-analyze.md"
+echo "  - .claude/commands/ralph-analyze.md"
+
 cp "$SCRIPT_DIR/.claude/commands/ralph-fix-inconsistencies.md" "$TARGET_DIR/.claude/commands/ralph-fix-inconsistencies.md"
 echo "  - .claude/commands/ralph-fix-inconsistencies.md"
 
