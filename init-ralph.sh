@@ -204,20 +204,29 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>' && \
     git push -u origin main"
   echo "  - Git initialized and pushed to ${REMOTE_URL}"
 
-  # Clean up local private key (keep public key for reference)
+  # Clean up local private key (already transferred to remote)
   rm "$KEY_PATH"
-  echo "  - Local private key deleted (public key kept at ${KEY_PATH}.pub)"
+  echo "  - Local private key deleted"
+
+  # Clone repo locally using user's default SSH identity
+  echo "Cloning repository locally..."
+  TEMP_PUBKEY="/tmp/${KEY_NAME}.pub.$$"
+  mv "${KEY_PATH}.pub" "$TEMP_PUBKEY"
+  rm -rf "$TARGET_DIR"
+  git clone "$REMOTE_URL" "$TARGET_DIR"
+  mv "$TEMP_PUBKEY" "${TARGET_DIR}/${KEY_NAME}.pub"
+  echo "  - Repository cloned to $TARGET_DIR (using your default SSH credentials)"
 
   echo ""
   echo -e "${GREEN}Remote deployment configured!${NC}"
   echo ""
-  echo "The unsecured system can now:"
-  echo "  - Push/pull from ${REMOTE_URL}"
-  echo "  - Access ONLY this repository (not your other repos)"
+  echo "Both systems are now synced via GitHub:"
+  echo "  - Local: $TARGET_DIR (uses your default SSH credentials)"
+  echo "  - Remote: ${UNSECURED_HOST}:${REMOTE_PROJECT} (uses scoped deploy key)"
   echo ""
   echo "To run Ralph on the unsecured system:"
   echo "  ssh ${UNSECURED_HOST}"
-  echo "  cd ${UNSECURED_PATH}/${REPO_NAME}"
+  echo "  cd ${REMOTE_PROJECT}"
   echo "  ./ralph.sh"
 else
   # Print success message (local only)
