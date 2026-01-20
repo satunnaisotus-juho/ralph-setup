@@ -1,0 +1,8 @@
+{
+  "name": "example-name",
+  "created": "YYYY-MM-DD",
+  "command_version": "git-commit-hash",
+  "source_project": "path or URL",
+  "analysis_status": "pending",
+  "tags": []
+}

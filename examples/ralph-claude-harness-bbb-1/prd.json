@@ -1,0 +1,607 @@
+{
+  "project": "Sales & Marketing Task Harness",
+  "description": "A continuous task executor for sales and marketing activities, running Claude in a loop to process complex, human-like tasks using MCP tools, Claude Code commands/hooks, and context files.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Directory Structure Setup",
+      "description": "As a developer, I need the directory structure and TypeScript project set up for the marketing/sales agent under src/.",
+      "acceptanceCriteria": [
+        "src/ directory exists with subdirectories: mcp/, mocks/, .claude/, context/",
+        "src/context/ has subdirectories: brand/, product/, audience/, templates/",
+        "src/mocks/ has subdirectories: handlers/, fixtures/",
+        "src/.claude/ has subdirectories: commands/, hooks/",
+        "Placeholder .gitkeep files exist in each directory to establish structure",
+        "src/package.json exists with TypeScript dependencies (typescript, @types/node)",
+        "src/tsconfig.json exists with strict mode enabled",
+        "npm install succeeds in src/ directory",
+        "npx tsc --noEmit passes (typecheck)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Task Queue Schema",
+      "description": "As a developer, I need a tasks.json schema to define the task queue structure.",
+      "acceptanceCriteria": [
+        "src/tasks.json exists with valid JSON structure",
+        "Schema supports: id, description (complex instruction), priority, status, created, completedAt",
+        "Status values: pending, in_progress, completed, failed",
+        "Priority values: urgent, high, normal, low",
+        "Contains 2-3 example tasks demonstrating complex, human-like activities",
+        "JSON is valid and parseable"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Continuous Polling Loop",
+      "description": "As a developer, I need wiggum.sh to run Claude in a continuous loop processing tasks.",
+      "acceptanceCriteria": [
+        "src/wiggum.sh exists and is executable (chmod +x)",
+        "Loop checks for pending tasks in src/tasks.json using jq",
+        "When pending tasks exist, runs Claude with src/marketing-prompt.md",
+        "When no pending tasks, sleeps for configurable poll interval (POLL_INTERVAL env var, default 60s)",
+        "Loop continues indefinitely until manually stopped (Ctrl+C)",
+        "Logs iteration status to console with timestamps",
+        "Streams Claude output to JSON log file (append-only) for human observation",
+        "Supports --test flag to set WIGGUM_TEST_MODE=true environment variable",
+        "Script runs without syntax errors (bash -n src/wiggum.sh passes)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Marketing Agent Prompt",
+      "description": "As a developer, I need marketing-prompt.md to instruct Claude how to process tasks.",
+      "acceptanceCriteria": [
+        "src/marketing-prompt.md exists with clear instructions",
+        "Instructs Claude to read tasks.json and pick highest priority pending task",
+        "Instructs Claude to read context files for brand voice, ICP, templates",
+        "Instructs Claude to read src/context/playbook.md before starting task",
+        "Instructs Claude to execute the task using available MCP tools",
+        "Instructs Claude to update task status to completed/failed",
+        "Instructs Claude to reflect after task: update playbook only for significant, repeated insights",
+        "Instructs Claude to create new commands only for patterns seen 2-3+ times",
+        "Instructs Claude to STOP after completing one task",
+        "References feedback-activity-repeat pattern for complex tasks"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "MCP Tool Interceptor",
+      "description": "As a developer, I need a mock MCP tool interceptor for testing Claude's tool usage.",
+      "acceptanceCriteria": [
+        "src/mocks/interceptor.ts exists with MockToolInterceptor class",
+        "Interceptor records all MCP tool calls (id, name, input, timestamp)",
+        "Interceptor routes to registered handlers by tool name",
+        "Provides getCalls() method returning all recorded calls",
+        "Provides getCallsByName(toolName) method for filtering calls",
+        "Provides clear() method to reset recorded calls",
+        "Exports types for ToolCall and MockHandler",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005b",
+      "title": "Claude Internal Tool Hooks",
+      "description": "As a developer, I need hooks to intercept Claude's built-in tools (Read, Bash, Write) in test mode.",
+      "acceptanceCriteria": [
+        "src/.claude/hooks/ contains hook scripts for internal tools",
+        "Hooks detect test mode via WIGGUM_TEST_MODE environment variable",
+        "pre-bash.sh allows curl/wget for web research, blocks destructive commands (rm -rf, etc.)",
+        "pre-read.sh and pre-write.sh route to test fixtures when WIGGUM_TEST_MODE=true",
+        "Hooks exit 0 to allow, exit 1 to block with message to stderr",
+        "All hook scripts are executable",
+        "Scripts run without syntax errors (bash -n passes)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Mock Hook Runner",
+      "description": "As a developer, I need a programmatic hook simulator for configuring test behavior.",
+      "acceptanceCriteria": [
+        "src/mocks/hooks.ts exists with MockHookRunner class",
+        "configure(toolName, config) method sets allow/block behavior with optional message",
+        "check(toolName, input) method returns {allowed: boolean, message?: string}",
+        "getInvocations() returns all hook check invocations for assertions",
+        "getInvocationsByTool(toolName) filters invocations by tool",
+        "clear() resets all configurations and invocations",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Test Harness",
+      "description": "As a developer, I need createTestHarness() combining interceptor and hooks for full test setup.",
+      "acceptanceCriteria": [
+        "src/mocks/harness.ts exists with createTestHarness() function",
+        "Returns object with interceptor, hooks, and fixtures properties",
+        "executeToolCall(name, input) checks hooks before routing to interceptor",
+        "simulateToolCall(name, input) for unit testing (fast, no Claude)",
+        "setFixture(path, content) sets up filesystem state for tests",
+        "getFixture(path) retrieves fixture content",
+        "Provides getCalls() and getHookInvocations() convenience methods",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "CRM Tool - lead_create",
+      "description": "As a marketing agent, I need an MCP tool to create leads in CRM.",
+      "acceptanceCriteria": [
+        "src/mcp/crm/lead_create.ts exists with MCP tool definition",
+        "Tool accepts: name (string), email (string), company (string), source (string), notes (string optional)",
+        "Tool returns: leadId (string), created (ISO timestamp)",
+        "src/mocks/handlers/mcp-crm.ts exists with mock handler",
+        "Mock handler generates unique leadId and returns valid response",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "CRM Tool - lead_update",
+      "description": "As a marketing agent, I need an MCP tool to update existing leads.",
+      "acceptanceCriteria": [
+        "src/mcp/crm/lead_update.ts exists with MCP tool definition",
+        "Tool accepts: leadId (string), fields (object with status, notes, tags, etc.)",
+        "Tool returns: success (boolean), updatedFields (array of field names)",
+        "Mock handler in mcp-crm.ts updated to handle lead_update",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "CRM Tool - lead_search",
+      "description": "As a marketing agent, I need an MCP tool to search and filter leads.",
+      "acceptanceCriteria": [
+        "src/mcp/crm/lead_search.ts exists with MCP tool definition",
+        "Tool accepts: query (string optional), filters (object with status, tags, dateRange)",
+        "Tool returns: leads (array of lead objects)",
+        "Mock handler returns configurable lead list based on filters",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Email Tool - send_email",
+      "description": "As a marketing agent, I need an MCP tool to send emails.",
+      "acceptanceCriteria": [
+        "src/mcp/email/send_email.ts exists with MCP tool definition",
+        "Tool accepts: to (string), subject (string), body (string), from (string optional)",
+        "Tool returns: messageId (string), sent (ISO timestamp)",
+        "src/mocks/handlers/mcp-email.ts exists with mock handler",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Mailchimp Tool - create_campaign",
+      "description": "As a marketing agent, I need an MCP tool to create Mailchimp campaigns.",
+      "acceptanceCriteria": [
+        "src/mcp/email/mailchimp_create_campaign.ts exists with MCP tool definition",
+        "Tool accepts: name (string), subject (string), listId (string), content (string)",
+        "Tool returns: campaignId (string), status (string)",
+        "Mock handler in mcp-email.ts handles mailchimp_create_campaign",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Mailchimp Tool - get_stats",
+      "description": "As a marketing agent, I need an MCP tool to get Mailchimp campaign statistics.",
+      "acceptanceCriteria": [
+        "src/mcp/email/mailchimp_get_stats.ts exists with MCP tool definition",
+        "Tool accepts: campaignId (string)",
+        "Tool returns: opens (number), clicks (number), bounces (number), unsubscribes (number)",
+        "Mock handler returns configurable stats",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "X/Twitter Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on X/Twitter.",
+      "acceptanceCriteria": [
+        "src/mcp/social/x_post.ts exists with MCP tool definition",
+        "Tool accepts: content (string), mediaUrls (string array optional)",
+        "Tool returns: postId (string), url (string)",
+        "src/mocks/handlers/mcp-social.ts exists with mock handler",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "X/Twitter Tool - get_engagement",
+      "description": "As a marketing agent, I need an MCP tool to get X/Twitter engagement metrics.",
+      "acceptanceCriteria": [
+        "src/mcp/social/x_get_engagement.ts exists with MCP tool definition",
+        "Tool accepts: postId (string optional), query (string optional for recent posts)",
+        "Tool returns: posts array with likes, retweets, replies, impressions per post",
+        "Mock handler returns configurable engagement metrics",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "LinkedIn Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on LinkedIn.",
+      "acceptanceCriteria": [
+        "src/mcp/social/linkedin_post.ts exists with MCP tool definition",
+        "Tool accepts: content (string), mediaUrls (string array optional), visibility (string)",
+        "Tool returns: postId (string), url (string)",
+        "Mock handler in mcp-social.ts handles linkedin_post",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Instagram Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on Instagram.",
+      "acceptanceCriteria": [
+        "src/mcp/social/instagram_post.ts exists with MCP tool definition",
+        "Tool accepts: mediaUrl (string), caption (string), hashtags (string array optional)",
+        "Tool returns: postId (string), url (string)",
+        "Mock handler in mcp-social.ts handles instagram_post",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Instagram Tool - get_insights",
+      "description": "As a marketing agent, I need an MCP tool to get Instagram insights.",
+      "acceptanceCriteria": [
+        "src/mcp/social/instagram_get_insights.ts exists with MCP tool definition",
+        "Tool accepts: postId (string optional), accountLevel (boolean optional)",
+        "Tool returns: posts array with reach, impressions, engagement, saves per post",
+        "Mock handler returns configurable insights",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Nostr Tool - publish_note",
+      "description": "As a marketing agent, I need an MCP tool to publish notes on Nostr.",
+      "acceptanceCriteria": [
+        "src/mcp/social/nostr_publish_note.ts exists with MCP tool definition",
+        "Tool accepts: content (string), tags (string array optional)",
+        "Tool returns: eventId (string), relays (string array)",
+        "Mock handler in mcp-social.ts handles nostr_publish_note",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Bluesky Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on Bluesky.",
+      "acceptanceCriteria": [
+        "src/mcp/social/bluesky_post.ts exists with MCP tool definition",
+        "Tool accepts: content (string), images (string array optional)",
+        "Tool returns: uri (string), cid (string)",
+        "Mock handler in mcp-social.ts handles bluesky_post",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Facebook Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on Facebook.",
+      "acceptanceCriteria": [
+        "src/mcp/social/facebook_post.ts exists with MCP tool definition",
+        "Tool accepts: content (string), mediaUrls (string array optional), pageId (string)",
+        "Tool returns: postId (string), url (string)",
+        "Mock handler in mcp-social.ts handles facebook_post",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "YouTube Tool - upload",
+      "description": "As a marketing agent, I need an MCP tool to upload videos to YouTube.",
+      "acceptanceCriteria": [
+        "src/mcp/social/youtube_upload.ts exists with MCP tool definition",
+        "Tool accepts: videoPath (string), title (string), description (string), tags (string array optional)",
+        "Tool returns: videoId (string), url (string)",
+        "Mock handler in mcp-social.ts handles youtube_upload",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "TikTok Tool - post",
+      "description": "As a marketing agent, I need an MCP tool to post on TikTok.",
+      "acceptanceCriteria": [
+        "src/mcp/social/tiktok_post.ts exists with MCP tool definition",
+        "Tool accepts: videoPath (string), caption (string), sounds (string array optional)",
+        "Tool returns: videoId (string), url (string)",
+        "Mock handler in mcp-social.ts handles tiktok_post",
+        "Tool definition includes pre-send hook trigger annotation",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Google Ads Tool - create_campaign",
+      "description": "As a marketing agent, I need an MCP tool to create Google Ads campaigns.",
+      "acceptanceCriteria": [
+        "src/mcp/ads/google_ads_create_campaign.ts exists with MCP tool definition",
+        "Tool accepts: name (string), budget (number), targeting (object), keywords (string array)",
+        "Tool returns: campaignId (string), status (string)",
+        "src/mocks/handlers/mcp-ads.ts exists with mock handler",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Google Ads Tool - get_performance",
+      "description": "As a marketing agent, I need an MCP tool to get Google Ads performance metrics.",
+      "acceptanceCriteria": [
+        "src/mcp/ads/google_ads_get_performance.ts exists with MCP tool definition",
+        "Tool accepts: campaignId (string), dateRange (object with start, end)",
+        "Tool returns: impressions (number), clicks (number), conversions (number), spend (number), roas (number)",
+        "Mock handler returns configurable performance metrics",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Meta Ads Tool - create_ad",
+      "description": "As a marketing agent, I need an MCP tool to create Meta/Facebook ads.",
+      "acceptanceCriteria": [
+        "src/mcp/ads/meta_ads_create_ad.ts exists with MCP tool definition",
+        "Tool accepts: adSetId (string), creative (object), targeting (object)",
+        "Tool returns: adId (string), status (string)",
+        "Mock handler in mcp-ads.ts handles meta_ads_create_ad",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "LinkedIn Ads Tool - create_campaign",
+      "description": "As a marketing agent, I need an MCP tool to create LinkedIn Ads campaigns.",
+      "acceptanceCriteria": [
+        "src/mcp/ads/linkedin_ads_create_campaign.ts exists with MCP tool definition",
+        "Tool accepts: name (string), budget (number), targeting (object), creatives (array)",
+        "Tool returns: campaignId (string), status (string)",
+        "Mock handler in mcp-ads.ts handles linkedin_ads_create_campaign",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "CMS Tool - create_page",
+      "description": "As a marketing agent, I need an MCP tool to create website pages.",
+      "acceptanceCriteria": [
+        "src/mcp/cms/create_page.ts exists with MCP tool definition",
+        "Tool accepts: title (string), slug (string), content (string), template (string optional)",
+        "Tool returns: pageId (string), url (string)",
+        "src/mocks/handlers/mcp-cms.ts exists with mock handler",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "CMS Tool - update_content",
+      "description": "As a marketing agent, I need an MCP tool to update page content.",
+      "acceptanceCriteria": [
+        "src/mcp/cms/update_content.ts exists with MCP tool definition",
+        "Tool accepts: pageId (string), content (string), section (string optional)",
+        "Tool returns: success (boolean), updated (ISO timestamp)",
+        "Mock handler in mcp-cms.ts handles update_content",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Blog Tool - create_post",
+      "description": "As a marketing agent, I need an MCP tool to create blog posts.",
+      "acceptanceCriteria": [
+        "src/mcp/cms/create_blog_post.ts exists with MCP tool definition",
+        "Tool accepts: title (string), content (string), categories (string array), tags (string array), publishDate (ISO string optional)",
+        "Tool returns: postId (string), url (string)",
+        "Mock handler in mcp-cms.ts handles create_blog_post",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Matrix Tool - send_message",
+      "description": "As a marketing agent, I need an MCP tool to send messages to Matrix for human feedback.",
+      "acceptanceCriteria": [
+        "src/mcp/matrix/send_message.ts exists with MCP tool definition",
+        "Tool accepts: roomId (string), message (string)",
+        "Tool returns: eventId (string)",
+        "src/mocks/handlers/mcp-matrix.ts exists with mock handler",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Matrix Tool - get_messages",
+      "description": "As a marketing agent, I need an MCP tool to read messages from Matrix.",
+      "acceptanceCriteria": [
+        "src/mcp/matrix/get_messages.ts exists with MCP tool definition",
+        "Tool accepts: roomId (string), since (ISO timestamp optional), limit (number optional)",
+        "Tool returns: messages array with sender, content, timestamp per message",
+        "Mock handler returns configurable message list",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Google Analytics Tool - get_traffic",
+      "description": "As a marketing agent, I need an MCP tool to get website traffic data.",
+      "acceptanceCriteria": [
+        "src/mcp/analytics/ga_get_traffic.ts exists with MCP tool definition",
+        "Tool accepts: dateRange (object with start, end), dimensions (string array: source, medium, page)",
+        "Tool returns: sessions (number), users (number), pageviews (number), bounceRate (number)",
+        "src/mocks/handlers/mcp-analytics.ts exists with mock handler",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "WooCommerce Tool - get_sales",
+      "description": "As a marketing agent, I need an MCP tool to get WooCommerce sales data.",
+      "acceptanceCriteria": [
+        "src/mcp/analytics/woocommerce_get_sales.ts exists with MCP tool definition",
+        "Tool accepts: dateRange (object with start, end), productId (string optional)",
+        "Tool returns: orders (number), revenue (number), averageOrderValue (number)",
+        "Mock handler in mcp-analytics.ts handles woocommerce_get_sales",
+        "Typecheck passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Task-Add Command",
+      "description": "As a marketing agent, I need a /task-add command to add tasks to the queue.",
+      "acceptanceCriteria": [
+        "src/.claude/commands/task-add.md exists",
+        "Command instructs Claude to prompt for task description and priority",
+        "Command instructs Claude to add task to src/tasks.json with pending status",
+        "Command generates unique task ID",
+        "Command sets created timestamp to current time"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Task-Status Command",
+      "description": "As a marketing agent, I need a /task-status command to view the task queue.",
+      "acceptanceCriteria": [
+        "src/.claude/commands/task-status.md exists",
+        "Command instructs Claude to read src/tasks.json",
+        "Command displays tasks grouped by status (pending, in_progress, completed, failed)",
+        "Command shows count of pending tasks",
+        "Command shows recently completed tasks (last 5)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Pre-Send Hook",
+      "description": "As a marketing agent, I need a pre-send hook to validate outbound content.",
+      "acceptanceCriteria": [
+        "src/.claude/hooks/pre-send.sh exists and is executable",
+        "Hook receives tool name as first argument, input JSON as second argument",
+        "Hook checks content against brand voice guidelines (reads src/context/brand/voice.md)",
+        "Hook checks for prohibited phrases (configurable list)",
+        "Hook exits 0 to allow, exits 1 to block with message to stderr",
+        "Script runs without syntax errors (bash -n passes)"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "End-to-End Task Execution Test",
+      "description": "As a developer, I need an integration test verifying full task execution flow.",
+      "acceptanceCriteria": [
+        "src/mocks/tests/e2e.test.ts exists with integration test",
+        "Test sets up harness with all mock tools configured",
+        "Test creates task: 'Check 5 best Instagram posts, create inspired GM post'",
+        "Test verifies instagram_get_insights was called",
+        "Test verifies instagram_post was called with generated content",
+        "Test verifies task status updated to completed in tasks.json",
+        "Test verifies all tool calls are recorded and assertable",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Context Files Setup",
+      "description": "As a marketing agent, I need context files for brand voice, ICP, and templates.",
+      "acceptanceCriteria": [
+        "src/context/brand/voice.md exists with tone guidelines (professional, friendly, etc.)",
+        "src/context/product/overview.md exists with product description placeholder",
+        "src/context/audience/icp.md exists with ideal customer profile placeholder",
+        "src/context/templates/email.md exists with example email template",
+        "src/context/templates/social.md exists with example social post templates",
+        "src/context/playbook.md exists as empty starter file with header comment",
+        "marketing-prompt.md references these context file paths"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
