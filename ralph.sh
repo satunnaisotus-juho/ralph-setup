@@ -76,8 +76,8 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   ITER_DURATION=$((SECONDS - ITER_START))
   ELAPSED=$((SECONDS - START_TIME))
 
-  # Check for completion signal (searches within JSON output)
-  if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
+  # Check for completion signal in assistant text messages only (not in tool results)
+  if echo "$OUTPUT" | jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text // empty' 2>/dev/null | grep -q "<promise>COMPLETE</promise>"; then
     echo ""
     echo "═══════════════════════════════════════════════════════"
     echo "  Ralph completed all tasks!"
