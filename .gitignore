@@ -4,3 +4,7 @@
 # Ralph streaming log
 ralph-log.json
 logs/
+
+# Feedback loop examples (keep template/docs, ignore actual examples)
+examples/*/
+!examples/_template/
