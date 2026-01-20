@@ -134,13 +134,29 @@ Then help articulate and structure their input.
 If analyzing an example in `examples/`:
 - Write to `examples/<name>/analysis/`
 
-If analyzing an external project:
+If analyzing an external project (run this skill from within the project being analyzed):
 ```
 Where should I save the analysis?
-A. Create a new example in examples/<name>/
+A. Create a new example in examples/<name>/ (provide path to examples directory)
 B. Save to the project directory itself
 C. Just output here (don't save files)
 ```
+
+**If option A (create new example):**
+1. Ask for the path to the examples directory (e.g., `/path/to/ralph-setup/examples`)
+2. Ask for the example name (e.g., `my-feature-v1`)
+3. Create the example directory structure:
+   ```
+   examples/<name>/
+   ├── PRD.md          # Copy from current directory
+   ├── prd.json        # Copy from current directory
+   ├── progress.txt    # Copy from current directory (if exists)
+   └── analysis/
+       ├── problems.md
+       └── improvements.md
+   ```
+4. Copy PRD.md, prd.json, and progress.txt from the current project directory to the new example directory
+5. Write analysis files to the `analysis/` subdirectory
 
 ### 4b. Write problems.md
 
