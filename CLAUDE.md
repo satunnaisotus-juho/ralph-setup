@@ -56,6 +56,7 @@ Note: The order of stories in prd.json does NOT imply priority. Ralph dynamicall
 
 - `prd.json` - Task list with user stories and `passes` status
 - `progress.txt` - Append-only learnings log
+- `implementation-notes.md` - Living document of research and codebase learnings (updated each iteration)
 
 ## Key Patterns
 
@@ -65,16 +66,15 @@ Stories must be completable in ONE context window:
 - Wrong: "Build entire dashboard", "Add authentication"
 
 ### Iteration Workflow
-1. Read `prd.json` and `progress.txt`
+1. Read `prd.json`, `progress.txt`, and `implementation-notes.md`
 2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
-3. Implement, run quality checks, commit if passing
-4. Update `prd.json` to mark `passes: true`
-5. Append learnings to `progress.txt`
-6. **STOP** - one story per iteration (a fresh Claude instance handles the next)
-7. Output `<promise>COMPLETE</promise>` only when ALL stories pass
-
-### AGENTS.md Updates
-Discovered patterns should be added to relevant `AGENTS.md` files for future iterations.
+3. **Pre-implementation research**: Web search for best practices, update `implementation-notes.md`
+4. Implement, run quality checks
+5. **Post-implementation**: Update `implementation-notes.md` with codebase learnings
+6. Update `prd.json` to mark `passes: true`, append to `progress.txt`
+7. Commit if passing (include all state files)
+8. **STOP** - one story per iteration (a fresh Claude instance handles the next)
+9. Output `<promise>COMPLETE</promise>` only when ALL stories pass
 
 ### Commit Format
 Commits should include detailed context. See `prompt.md` for the full template. Summary:

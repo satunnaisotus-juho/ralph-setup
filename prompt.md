@@ -7,15 +7,18 @@ You are an autonomous coding agent working on a software project.
 1. Read the PRD at `prd.json` (in the same directory as this file)
 2. If `PRD.md` exists, skim it for technical context (architecture, APIs, non-functional requirements)
 3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
-4. Pick the next user story to implement (see "Choosing the Next Story" below)
-5. Implement that single user story
-6. Run quality checks and functional verification (see "Pre-Commit Checklist")
-7. Update AGENTS.md files if you discover reusable patterns (see below)
-8. Update the PRD to set `passes: true` for the completed story
-9. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
-10. If ALL checks pass, commit ALL changes (including prd.json and progress.txt) using the commit format below
-11. Push the commit to the remote repository with: `git push`
-12. **STOP.** End your response now. Another iteration will handle the next story.
+4. Read `implementation-notes.md` if it exists (check Codebase Patterns section first)
+5. Pick the next user story to implement (see "Choosing the Next Story" below)
+6. **Research phase**: Web search for best practices for this specific task (see "Pre-Implementation Research")
+7. Update `implementation-notes.md` with research findings
+8. Implement that single user story
+9. Run quality checks and functional verification (see "Pre-Commit Checklist")
+10. Update `implementation-notes.md` with codebase learnings discovered (see "Post-Implementation Learnings")
+11. Update the PRD to set `passes: true` for the completed story
+12. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
+13. If ALL checks pass, commit ALL changes (including prd.json, progress.txt, and implementation-notes.md) using the commit format below
+14. Push the commit to the remote repository with: `git push`
+15. **STOP.** End your response now. Another iteration will handle the next story.
 
 ## Choosing the Next Story
 
@@ -25,8 +28,39 @@ Consider:
 1. **Dependencies** - What does this story need that doesn't exist yet? Pick stories whose dependencies are already satisfied.
 2. **Current codebase state** - What's already implemented? Build on existing work.
 3. **Learnings from progress.txt** - What did previous iterations discover? Use this context.
+4. **Existing learnings** - What does implementation-notes.md say about relevant patterns?
 
 Use your judgment. Schema/database work often needs to come before backend logic, which often needs to come before UI - but you decide based on the actual state of the code, not assumptions.
+
+## Pre-Implementation Research
+
+After picking a story, before writing code:
+
+1. **Check existing learnings** - Review the Codebase Patterns section of implementation-notes.md
+2. **Web search** - Search for best practices specific to this implementation:
+   - "[technology] [specific task] best practices"
+   - "[framework] [pattern] recommended approach"
+3. **Document findings** - Add to implementation-notes.md under the story's section:
+   - 2-3 key insights
+   - 1-2 reference links
+   - Note how codebase patterns might affect the approach
+
+Keep research focused - you're about to implement, not write a report.
+
+## Post-Implementation Learnings
+
+After completing a story, before committing:
+
+1. **Reflect** - What did you learn that future iterations should know?
+2. **Update Codebase Patterns** - Add general patterns to the top section of implementation-notes.md:
+   - How components/modules connect
+   - Conventions this codebase follows
+   - Gotchas and edge cases
+3. **Update Story Section** - Add specific learnings under the story:
+   - What actually worked vs what was expected
+   - Any surprises or adjustments made
+
+**Priority:** Codebase-specific learnings > generic best practices. These learnings compound - they make future research more targeted and implementation faster.
 
 ## Pre-Commit Checklist
 
@@ -161,31 +195,44 @@ If you discover a **reusable pattern** that future iterations should know, add i
 
 Only add patterns that are **general and reusable**, not story-specific details.
 
-## Update AGENTS.md Files
+## Implementation Notes Format
 
-Before committing, check if any edited files have learnings worth preserving in nearby AGENTS.md files:
+Create or update `implementation-notes.md` with this structure:
 
-1. **Identify directories with edited files** - Look at which directories you modified
-2. **Check for existing AGENTS.md** - Look for AGENTS.md in those directories or parent directories
-3. **Add valuable learnings** - If you discovered something future developers/agents should know:
-   - API patterns or conventions specific to that module
-   - Gotchas or non-obvious requirements
-   - Dependencies between files
-   - Testing approaches for that area
-   - Configuration or environment requirements
+```markdown
+# Implementation Notes
 
-**Examples of good AGENTS.md additions:**
-- "When modifying X, also update Y to keep them in sync"
-- "This module uses pattern Z for all API calls"
-- "Tests require the dev server running on PORT 3000"
-- "Field names must match the template exactly"
+Living document of research and codebase learnings. Updated each iteration.
 
-**Do NOT add:**
-- Story-specific implementation details
-- Temporary debugging notes
-- Information already in progress.txt
+---
 
-Only update AGENTS.md if you have **genuinely reusable knowledge** that would help future work in that directory.
+## Codebase Patterns
+
+Accumulated learnings about how this specific codebase works.
+
+- [Pattern - e.g., "API routes use middleware X before handlers"]
+- [Convention - e.g., "State management follows Y pattern"]
+- [Gotcha - e.g., "Don't forget to update Z when changing W"]
+
+---
+
+## Story Research
+
+### US-001: [Story Title]
+
+**Pre-Implementation Research:**
+- Best practice 1
+- Best practice 2
+- Reference: [link]
+
+**Post-Implementation Learnings:**
+- What actually worked
+- Codebase-specific discovery
+
+---
+```
+
+The Codebase Patterns section is the most valuable - it accumulates knowledge that makes each successive iteration more effective.
 
 ## Quality Requirements
 
