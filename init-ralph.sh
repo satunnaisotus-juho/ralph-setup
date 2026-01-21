@@ -93,6 +93,15 @@ echo "  - .claude/commands/ralph-git-init.md"
 cp "$SCRIPT_DIR/.claude/settings.local.json" "$TARGET_DIR/.claude/settings.local.json"
 echo "  - .claude/settings.local.json"
 
+# Create ralph-conventions.json with source path
+cat > "$TARGET_DIR/ralph-conventions.json" << EOF
+{
+  "ralphSetupPath": "$SCRIPT_DIR",
+  "_comment": "Path to ralph-setup repo for saving examples. Update for your machine if needed."
+}
+EOF
+echo "  - ralph-conventions.json (update path for your machine if needed)"
+
 # Update .gitignore
 echo "Updating .gitignore..."
 
@@ -215,6 +224,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>' && \
   echo "Cloning repository locally..."
   TEMP_PUBKEY="/tmp/${KEY_NAME}.pub.$$"
   mv "${KEY_PATH}.pub" "$TEMP_PUBKEY"
+  cd "$(dirname "$TARGET_DIR")"  # Exit TARGET_DIR before deleting it
   rm -rf "$TARGET_DIR"
   git clone "$REMOTE_URL" "$TARGET_DIR"
   mv "$TEMP_PUBKEY" "${TARGET_DIR}/${KEY_NAME}.pub"

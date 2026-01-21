@@ -131,21 +131,29 @@ Then help articulate and structure their input.
 
 ### 4a. Determine Output Location
 
-If analyzing an example in `examples/`:
+**First, check for ralph-setup path:**
+Read `ralph-conventions.json` in the project root and look for `ralphSetupPath`.
+
+If analyzing an example already in `examples/`:
 - Write to `examples/<name>/analysis/`
 
-If analyzing an external project (run this skill from within the project being analyzed):
+If analyzing an external project and `ralphSetupPath` is configured:
 ```
 Where should I save the analysis?
-A. Create a new example in examples/<name>/ (provide path to examples directory)
+A. Save to ralph-setup examples at {ralphSetupPath}/examples/<name>/ (Recommended)
 B. Save to the project directory itself
 C. Just output here (don't save files)
 ```
 
-**If option A (create new example):**
-1. Ask for the path to the examples directory (e.g., `/path/to/ralph-setup/examples`)
-2. Ask for the example name (e.g., `my-feature-v1`)
-3. Create the example directory structure:
+If `ralphSetupPath` is not configured or the path doesn't exist:
+```
+Where is your ralph-setup directory? (e.g., ~/workspace/ralph-setup)
+This will be used for saving examples.
+```
+
+**If creating a new example (option A):**
+1. Ask for the example name (e.g., `my-feature-v1`)
+2. Create the example directory structure at `{ralphSetupPath}/examples/<name>/`:
    ```
    examples/<name>/
    ├── PRD.md          # Copy from current directory
@@ -155,8 +163,8 @@ C. Just output here (don't save files)
        ├── problems.md
        └── improvements.md
    ```
-4. Copy PRD.md, prd.json, and progress.txt from the current project directory to the new example directory
-5. Write analysis files to the `analysis/` subdirectory
+3. Copy PRD.md, prd.json, and progress.txt from the current project directory to the new example directory
+4. Write analysis files to the `analysis/` subdirectory
 
 ### 4b. Write problems.md
 
