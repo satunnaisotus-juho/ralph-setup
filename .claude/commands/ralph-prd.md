@@ -293,6 +293,39 @@ If a story depends on another, state it explicitly:
 - [ ] Produces: Payment confirmation used by US-010
 ```
 
+#### Rule 6: No "Assume Available" for Core Functionality
+
+Never use "assume available" or "assume configured" for functionality required to deliver user value. When the user's request involves external integrations or tools, you MUST either:
+
+**Option A - Include as stories:**
+```markdown
+### US-XXX: Configure [Integration]
+**Description:** As a developer, I need [integration] configured so that [feature] can function.
+
+**Acceptance Criteria:**
+- [ ] Integration configured and accessible
+- [ ] Test call succeeds with real data
+- [ ] Error handling for integration failures
+- [ ] Typecheck passes
+```
+
+**Option B - Explicit prerequisites (with user confirmation):**
+```markdown
+## Prerequisites (Manual Setup Required)
+Before running this system, you must:
+1. Configure [Integration] with [specific settings]
+2. Verify with: `[verification command]`
+
+Note: The PRD does not include stories for this setup.
+```
+
+**During the conversation phases, when integrations are mentioned:**
+- Phase 1-3: Note any integrations mentioned
+- Phase 4: Explicitly ask: "For [integration], should I include configuration stories, or treat it as a manual prerequisite?"
+- Phase 5: Include either stories OR a Prerequisites section based on user choice
+
+**Why this matters:** "Assume available" leads to PRDs that produce infrastructure scaffolding without actual capabilities - systems that technically "work" but don't deliver user value.
+
 ---
 
 ## Example PRD (v2 Format)
@@ -435,4 +468,5 @@ Before saving the PRD:
 - [ ] Ambiguous terms replaced with precise language
 - [ ] Dependencies explicitly stated with "Depends on:" and "Integrates with:"
 - [ ] Non-goals clearly define what's out of scope
+- [ ] External integrations have either configuration stories OR explicit prerequisites (never "assume available")
 - [ ] Saved to `PRD.md`
