@@ -33,12 +33,10 @@ Take a PRD (markdown file or text) and convert it to `.ralph/prd.json`.
       "acceptanceCriteria": [
         "Criterion 1",
         "Criterion 2",
+        "Unit test: specific test case",
+        "Integration test: specific test case",
         "Typecheck passes",
         "All tests pass"
-      ],
-      "testRequirements": [
-        "Unit test: specific test case",
-        "Integration test: specific test case"
       ],
       "passes": false,
       "notes": ""
@@ -133,7 +131,7 @@ Frontend stories are NOT complete until visually verified. Ralph will navigate t
 2. **IDs**: Sequential (US-001, US-002, etc.)
 3. **All stories**: `passes: false` and empty `notes`
 4. **Always add**: "Typecheck passes" AND "All tests pass" to every story's acceptance criteria
-5. **Always add**: `testRequirements` array with specific test cases for each story
+5. **Include test requirements directly in acceptanceCriteria** (e.g., "Unit test: validates input", "Integration test: API returns created resource")
 6. **First story should be test harness setup** if the project doesn't have test infrastructure
 
 ---
@@ -186,12 +184,10 @@ Add ability to mark tasks with different statuses.
       "acceptanceCriteria": [
         "Add status column: 'pending' | 'in_progress' | 'done' (default 'pending')",
         "Generate and run migration successfully",
+        "Unit test: status column exists with correct type",
+        "Unit test: default value is 'pending'",
         "Typecheck passes",
         "All tests pass"
-      ],
-      "testRequirements": [
-        "Unit test: status column exists with correct type",
-        "Unit test: default value is 'pending'"
       ],
       "passes": false,
       "notes": ""
@@ -203,13 +199,11 @@ Add ability to mark tasks with different statuses.
       "acceptanceCriteria": [
         "Each task card shows colored status badge",
         "Badge colors: gray=pending, blue=in_progress, green=done",
+        "Unit test: StatusBadge renders correct color for each status",
+        "Integration test: TaskCard displays badge with task's status",
         "Typecheck passes",
         "All tests pass",
         "Verify in browser"
-      ],
-      "testRequirements": [
-        "Unit test: StatusBadge renders correct color for each status",
-        "Integration test: TaskCard displays badge with task's status"
       ],
       "passes": false,
       "notes": ""
@@ -222,13 +216,11 @@ Add ability to mark tasks with different statuses.
         "Each row has status dropdown or toggle",
         "Changing status saves immediately",
         "UI updates without page refresh",
+        "Unit test: status toggle cycles through states correctly",
+        "Integration test: toggling status calls API and updates UI",
         "Typecheck passes",
         "All tests pass",
         "Verify in browser"
-      ],
-      "testRequirements": [
-        "Unit test: status toggle cycles through states correctly",
-        "Integration test: toggling status calls API and updates UI"
       ],
       "passes": false,
       "notes": ""
@@ -240,13 +232,11 @@ Add ability to mark tasks with different statuses.
       "acceptanceCriteria": [
         "Filter dropdown: All | Pending | In Progress | Done",
         "Filter persists in URL params",
+        "Unit test: filter function returns only matching tasks",
+        "Integration test: selecting filter updates URL and displayed tasks",
         "Typecheck passes",
         "All tests pass",
         "Verify in browser"
-      ],
-      "testRequirements": [
-        "Unit test: filter function returns only matching tasks",
-        "Integration test: selecting filter updates URL and displayed tasks"
       ],
       "passes": false,
       "notes": ""
@@ -264,7 +254,7 @@ Before writing prd.json, verify:
 - [ ] Each story is completable in one iteration (small enough)
 - [ ] Every story has "Typecheck passes" as criterion
 - [ ] Every story has "All tests pass" as criterion
-- [ ] Every story has `testRequirements` array with specific test cases
+- [ ] Every story has specific test requirements in acceptanceCriteria (e.g., "Unit test: validates input")
 - [ ] UI stories have "Verify in browser" as criterion
 - [ ] Acceptance criteria are verifiable (not vague)
 - [ ] `testCommand` is set at the top level

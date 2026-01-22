@@ -155,19 +155,16 @@ The first story is ALWAYS test harness setup:
 **Acceptance Criteria:**
 - [ ] [Functional criterion - specific and verifiable]
 - [ ] [Another criterion]
+- [ ] Unit test: [specific test case, e.g., "returns error when input empty"]
+- [ ] Integration test: [e.g., "API endpoint returns created resource"]
 - [ ] Typecheck passes
 - [ ] All tests pass
-
-**Test Requirements:**
-- [ ] Unit test: [specific test case, e.g., "returns error when input empty"]
-- [ ] Unit test: [another case if needed]
-- [ ] Integration test: [e.g., "API endpoint returns created resource"]
 
 **Integrates with:** [other stories this connects to]
 **Depends on:** [stories that must be completed first]
 ```
 
-**Test requirement granularity:** Be as specific as possible. Name concrete test cases where you can identify them. Where it's unclear, describe the category (e.g., "Unit tests for validation logic").
+**Test requirement granularity:** Include specific test cases directly in acceptance criteria. Be as specific as possible. Name concrete test cases where you can identify them. Where it's unclear, describe the category (e.g., "Unit tests for validation logic").
 
 ---
 
@@ -235,10 +232,6 @@ State dependencies clearly:
         "Typecheck passes",
         "All tests pass"
       ],
-      "testRequirements": [
-        "Example unit test runs and passes",
-        "Example integration test runs and passes"
-      ],
       "passes": false,
       "notes": ""
     },
@@ -249,15 +242,11 @@ State dependencies clearly:
       "acceptanceCriteria": [
         "Specific verifiable criterion",
         "Another criterion",
+        "Unit test: specific test case",
+        "Integration test: specific test case",
         "Typecheck passes",
         "All tests pass"
       ],
-      "testRequirements": [
-        "Unit test: specific test case",
-        "Integration test: specific test case"
-      ],
-      "dependsOn": ["US-001"],
-      "integratesWith": ["US-003"],
       "passes": false,
       "notes": ""
     }
@@ -306,7 +295,7 @@ Before saving:
 - [ ] Completed Architecture & Test Strategy phase (tech stack + testing approach)
 - [ ] US-001 is test harness setup
 - [ ] Every story has "All tests pass" in acceptance criteria
-- [ ] Every story has specific test requirements
+- [ ] Every story has specific test requirements in acceptance criteria (e.g., "Unit test: validates input")
 - [ ] UI stories have "Verify in browser"
 - [ ] Story dependencies explicit with "Depends on:" and "Integrates with:"
 - [ ] No "assume available" for integrations
