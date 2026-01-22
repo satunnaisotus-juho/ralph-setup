@@ -240,9 +240,13 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>' && \
   echo "  - Local: $TARGET_DIR (uses your default SSH credentials)"
   echo "  - Remote: ${UNSECURED_HOST}:${REMOTE_PROJECT} (uses scoped deploy key)"
   echo ""
-  echo "To run Ralph on the unsecured system:"
+  echo "To set up and run Ralph on the unsecured system:"
   echo "  ssh ${UNSECURED_HOST}"
   echo "  cd ${REMOTE_PROJECT}"
+  echo "  claude"
+  echo "  /ralph-prd describe what you want to build"
+  echo "  /ralph-prd-to-json .ralph/PRD.md"
+  echo "  # Then run Ralph:"
   echo "  ./.ralph/ralph.sh"
 else
   # Print success message (local only)
