@@ -254,12 +254,23 @@ A frontend story is NOT complete until browser verification passes.
 ## Stop Condition
 
 After completing ONE user story:
-1. If ALL stories have `passes: true` → Output `<promise>COMPLETE</promise>` on its own line
+1. If ALL stories have `passes: true` → Output the completion signal **alone on its own line** (see below)
 2. If ANY stories have `passes: false` → **STOP immediately.** End your response now.
 
 **Critical:** Do NOT loop back to pick another story. Do NOT continue working. A fresh Claude instance will be spawned for the next story with clean context.
 
-**Important:** Do NOT mention or quote the completion signal in your reasoning or explanations. The signal is detected by pattern matching, so any mention of it (even in quotes or when explaining what you should NOT do) will trigger false completion.
+### Completion Signal Format
+
+When ALL stories are complete, output EXACTLY this on its own line with nothing else:
+
+<promise>COMPLETE</promise>
+
+**Requirements:**
+- The signal must be on its **own line** - not inline with other text
+- Do not wrap it in code blocks, quotes, or any formatting
+- Do not mention or explain the signal - just output it alone
+
+**NEVER quote or mention the completion signal in your reasoning, explanations, or code comments.** The detection uses pattern matching, so any inline mention (even in quotes or when explaining) can cause false positives.
 
 ## Important
 

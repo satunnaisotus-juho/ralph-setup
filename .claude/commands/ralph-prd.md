@@ -2,169 +2,99 @@
 description: "Generate a Product Requirements Document (PRD) for a new feature. Use when planning a feature, starting a new project, or when asked to create a PRD."
 ---
 
-# PRD Generator v2
+# PRD Generator v3 (Test-Focused)
 
-Create PRDs that transfer **system understanding**, not just feature lists.
+Create PRDs that prioritize **testability** from the start. Every project begins with test infrastructure, and every story includes test requirements.
 
-**Key principle:** Gather all intent and details BEFORE making architectural decisions. This ensures technical choices are informed by the full picture.
+**Key principle:** Test harness first, features second. All stories must pass the test suite before completion.
 
 ---
 
 ## The Job
 
-A multi-phase conversation that builds understanding progressively:
+A 3-phase conversation:
 
-1. **Phase 1: Intent** - Understand the problem and goals deeply
-2. **Phase 2: User Journey** - Map how users interact with the system
-3. **Phase 3: Details & Edge Cases** - Explore specifics and boundaries
-4. **Phase 4: Architecture** - NOW make technical decisions (with full context)
-5. **Phase 5: Generate PRD** - Write the document with stories
+1. **Phase 1: Discovery** - Understand the problem, users, scope, and edge cases
+2. **Phase 2: Architecture & Test Strategy** - Tech stack AND testing approach together
+3. **Phase 3: Generate PRD** - Write PRD.md and prd.json with test-first stories
 
-**Important:** Do NOT start implementing. Just create the PRD.
+**Important:** Do NOT start implementing. Create the PRD and get user approval first.
 
 ---
 
-## Phase 1: Intent (The "Why")
+## Phase 1: Discovery
 
-Start by understanding the core intent. Ask questions like:
+Understand the full picture before making technical decisions.
 
-```
-1. What problem are we solving?
-   A. [Inferred option based on their description]
-   B. [Alternative interpretation]
-   C. [Another angle]
-   D. Other: [please specify]
+**Cover these areas (use AskUserQuestion for structured choices):**
 
-2. Who experiences this problem most acutely?
-   A. [User type 1]
-   B. [User type 2]
-   C. [User type 3]
-   D. Other: [please specify]
+- **Problem & goals:** What are we solving? Why does it matter?
+- **Users:** Who benefits? Who are the primary users?
+- **Scope:** What's the minimal viable scope? What's explicitly out?
+- **Happy path:** Walk through the ideal user flow step by step
+- **Edge cases:** What can go wrong? How should errors be handled?
+- **Integrations:** What external systems are involved?
 
-3. What does success look like for the user?
-   A. They can do X faster
-   B. They can do Y that was impossible before
-   C. They avoid pain point Z
-   D. Other: [please specify]
+**Quick codebase check:** If the directory has existing code, briefly scan for existing test infrastructure before proceeding.
 
-4. What's the scope?
-   A. Minimal - just solve the core problem
-   B. Complete - full-featured solution
-   C. Foundation - build for future expansion
-   D. Other: [please specify]
-```
-
-**Goal:** Understand WHY this matters before discussing WHAT to build.
+**Goal:** Build a complete mental model before discussing implementation.
 
 ---
 
-## Phase 2: User Journey (The "How Users See It")
+## Phase 2: Architecture & Test Strategy
 
-Now map the user's experience. Ask questions like:
+Tech decisions and testing decisions inform each other - make them together.
 
-```
-5. Walk me through the user's journey. What triggers them to use this?
-   A. [Scenario 1]
-   B. [Scenario 2]
-   C. Multiple entry points
-   D. Other: [please specify]
+**Cover these areas:**
 
-6. What's the happy path - the ideal flow from start to finish?
-   [Ask them to describe step by step]
+### Technical Architecture
+- What's the tech stack? (framework, language, database)
+- What are the main components and how do they connect?
+- What's the data flow?
 
-7. What are the key decision points or branches in the flow?
-   [Explore alternatives and variations]
+### Test Strategy
+Based on the tech stack, determine:
 
-8. What feedback does the user need at each step?
-   A. Visual confirmation
-   B. Data/results display
-   C. Progress indication
-   D. Error messages only
-```
+- **Test framework:** What testing tools fit this stack?
+  - Node/TS: Vitest, Jest, Playwright
+  - Python: pytest, unittest
+  - Go: testing package, testify
+  - etc.
 
-**Goal:** Build a mental model of user interaction BEFORE thinking about implementation.
+- **Test types needed:**
+  - **Unit tests:** Isolated logic, pure functions, utilities
+  - **Integration tests:** Components working together, API endpoints, database operations
+  - **E2E tests:** Full user flows (if applicable - usually for web apps)
 
----
+- **What gets tested:**
+  - Core business logic → unit tests
+  - API endpoints → integration tests
+  - User-facing flows → E2E tests
+  - Edge cases and error handling → unit + integration
 
-## Phase 3: Details & Edge Cases (The "What Ifs")
-
-Explore the specifics and boundaries:
-
-```
-9. What happens when things go wrong?
-   - What errors can occur?
-   - How should the system respond?
-   - What does the user see?
-
-10. What are the boundaries?
-    - What should this NOT do? (critical for scope)
-    - What's explicitly out of scope for now?
-
-11. Are there any constraints I should know about?
-    - Existing systems to integrate with?
-    - Performance requirements?
-    - Security considerations?
-
-12. What terms or concepts are specific to this domain?
-    [Build a glossary of domain language]
-```
-
-**Goal:** Surface hidden requirements and implicit assumptions.
+**Goal:** Clear technical approach AND clear testing approach before writing stories.
 
 ---
 
-## Phase 4: Architecture (The "How It Works")
+## Phase 3: Generate PRD
 
-NOW, with full context, discuss technical approach:
+Write two files:
+1. `.ralph/PRD.md` - Human-readable documentation
+2. `.ralph/prd.json` - Machine-readable for Ralph execution
 
-```
-13. Based on everything above, here's how I understand the system working:
-    [Describe the execution model / how pieces connect]
-
-    Does this match your mental model?
-
-14. I see these as the main components:
-    - [Component A]: does X
-    - [Component B]: does Y
-    - [Component C]: connects A to B
-
-    Does this breakdown make sense?
-
-15. For technical approach, I'm thinking:
-    A. [Approach 1 with tradeoffs]
-    B. [Approach 2 with tradeoffs]
-    C. [Approach 3 with tradeoffs]
-
-    Which aligns best with your constraints?
-```
-
-**Goal:** Confirm the mental model and technical approach BEFORE writing stories.
-
----
-
-## Phase 5: Generate PRD
-
-Now write the PRD with these sections:
-
-### PRD Structure
+### PRD.md Structure
 
 ```markdown
 # PRD: [Feature Name]
 
 ## 1. Problem Statement
 What problem are we solving and why it matters.
-[From Phase 1]
 
 ## 2. Goals
-Specific, measurable objectives.
-[From Phase 1]
+Specific, measurable objectives (bullet list).
 
-## 3. User Journey
-Step-by-step flow from the user's perspective.
-[From Phase 2 - this is the mental model transfer]
-
-## 4. How It Works
-**This section is critical.** Explain the execution model:
+## 3. How It Works
+Explain the execution model:
 - How do the pieces connect at runtime?
 - What calls what?
 - What's the data flow?
@@ -176,297 +106,209 @@ User action → Component A → Component B → Result
             Component C (async)
 ```
 
-[From Phase 4]
+## 4. Test Strategy
+- **Test framework:** [framework name]
+- **Test command:** `[e.g., npm test]`
+- **Unit tests:** [what they cover]
+- **Integration tests:** [what they cover]
+- **E2E tests:** [what they cover, if applicable]
 
-## 5. Key Concepts
-Domain-specific terms explained where they matter.
-[From Phase 3]
-
-## 6. User Stories
+## 5. User Stories
 [See story format below]
 
-## 7. Non-Goals
+## 6. Non-Goals
 What this explicitly does NOT include.
-[From Phase 3]
 
-## 8. Open Questions
+## 7. Open Questions
 Remaining uncertainties.
 ```
 
 ---
 
-## User Story Format
+## Story Format
 
-### Story Structure
+### Foundation Story (Always US-001)
+
+The first story is ALWAYS test harness setup:
 
 ```markdown
-### US-001: [Title]
+### US-001: Set up test harness
+**Description:** As a developer, I need test infrastructure so all future work is verified before commits.
+
+**Acceptance Criteria:**
+- [ ] Test framework installed and configured
+- [ ] Unit test setup working (example test passes)
+- [ ] Integration test setup working (example test passes)
+- [ ] E2E test setup if applicable (example test passes)
+- [ ] Test command documented (e.g., `npm test`)
+- [ ] Tests run successfully in CI/headless mode
+- [ ] Typecheck passes
+- [ ] All tests pass
+```
+
+### Feature Stories
+
+```markdown
+### US-XXX: [Title]
 **Description:** As a [user], I want [feature] so that [benefit].
 
 **Acceptance Criteria:**
-- [ ] [Specific verifiable criterion]
+- [ ] [Functional criterion - specific and verifiable]
 - [ ] [Another criterion]
-- [ ] Typecheck/lint passes
-- [ ] [Integration criterion - how this connects to other parts]
+- [ ] Typecheck passes
+- [ ] All tests pass
 
-**Integrates with:** [List other stories/components this connects to]
+**Test Requirements:**
+- [ ] Unit test: [specific test case, e.g., "returns error when input empty"]
+- [ ] Unit test: [another case if needed]
+- [ ] Integration test: [e.g., "API endpoint returns created resource"]
+
+**Integrates with:** [other stories this connects to]
+**Depends on:** [stories that must be completed first]
 ```
 
-### Story Rules
+**Test requirement granularity:** Be as specific as possible. Name concrete test cases where you can identify them. Where it's unclear, describe the category (e.g., "Unit tests for validation logic").
 
-#### Rule 1: Infrastructure Before Features
-If the system needs a foundation (server, database schema, core module), that's the FIRST story.
+---
 
-**Wrong order:**
-- US-001: Add feature to server
-- US-002: Add another feature to server
-- US-003: Create server ← too late!
+## Story Rules
 
-**Right order:**
-- US-001: Create server foundation
-- US-002: Add first feature
-- US-003: Add second feature
+### Rule 1: Test Harness First
+US-001 is always test infrastructure setup. No feature work until tests are runnable.
 
-#### Rule 2: Validation Checkpoints After First Instance
+### Rule 2: All Tests Pass = Commit Gate
+Every story includes "All tests pass" in acceptance criteria. Ralph cannot complete a story unless the full test suite passes.
 
-When you have repetitive stories (3+ similar items), structure them as:
+### Rule 3: Validation Checkpoints
+When you have repetitive stories (3+ similar items):
 
-1. **First instance** - Build the pattern
+1. **First instance** - Build the pattern with tests
 2. **Validation checkpoint** - Verify pattern works end-to-end
 3. **Remaining instances** - Replicate the validated pattern
 
-**Example:**
 ```markdown
 ### US-005: Create first API endpoint (users)
-[Full implementation of the pattern]
+[Full implementation with tests]
 
-### US-006: CHECKPOINT - Validate API pattern works
-**Description:** Verify the API pattern works end-to-end before building more endpoints.
-
+### US-006: CHECKPOINT - Validate API pattern
 **Acceptance Criteria:**
 - [ ] Call endpoint from real client (not just unit test)
 - [ ] Verify request/response cycle works
-- [ ] Confirm error handling works as expected
+- [ ] All tests pass
 - [ ] **STOP if this fails** - fix pattern before proceeding
 
 ### US-007: Create remaining API endpoints
-[Now safe to replicate the pattern]
+[Now safe to replicate]
 ```
 
-#### Rule 3: Integration Criteria, Not Just Local Criteria
+### Rule 4: No "Assume Available"
+Never assume external integrations are configured. Either:
+- Include configuration as a story, OR
+- List as explicit prerequisite with verification command
 
-Every story should include at least one criterion that validates integration:
-
-**Local only (insufficient):**
-- [ ] Function returns correct value
-- [ ] Unit test passes
-
-**With integration (better):**
-- [ ] Function returns correct value
-- [ ] Unit test passes
-- [ ] Function is called by [Component X] in production flow
-- [ ] End-to-end: User action triggers this and produces expected result
-
-#### Rule 4: Precise Language
-
-Avoid ambiguous terms. Be specific:
-
-| Ambiguous | Precise |
-|-----------|---------|
-| "Test that X works" | "Unit test: call X directly, verify output" |
-| "Test that X works" | "Integration test: trigger X via user action, verify result" |
-| "Component Y" | "Y module (file: src/y.ts)" |
-| "Component Y" | "Y service (runs as separate process)" |
-| "Integrates with Z" | "Calls Z's API endpoint /foo" |
-| "Integrates with Z" | "Z calls this via event handler" |
-
-#### Rule 5: Prerequisites at Point of Use
-
-If a story depends on another, state it explicitly:
-
+### Rule 5: Dependencies Explicit
+State dependencies clearly:
 ```markdown
-### US-008: Add payment processing
-**Depends on:** US-003 (database schema), US-005 (API foundation)
-
-**Acceptance Criteria:**
-- [ ] Requires: Cart total available from US-007
-- [ ] Produces: Payment confirmation used by US-010
+**Depends on:** US-003 (database schema)
+**Integrates with:** US-005 (API), US-008 (UI)
 ```
-
-#### Rule 6: No "Assume Available" for Core Functionality
-
-Never use "assume available" or "assume configured" for functionality required to deliver user value. When the user's request involves external integrations or tools, you MUST either:
-
-**Option A - Include as stories:**
-```markdown
-### US-XXX: Configure [Integration]
-**Description:** As a developer, I need [integration] configured so that [feature] can function.
-
-**Acceptance Criteria:**
-- [ ] Integration configured and accessible
-- [ ] Test call succeeds with real data
-- [ ] Error handling for integration failures
-- [ ] Typecheck passes
-```
-
-**Option B - Explicit prerequisites (with user confirmation):**
-```markdown
-## Prerequisites (Manual Setup Required)
-Before running this system, you must:
-1. Configure [Integration] with [specific settings]
-2. Verify with: `[verification command]`
-
-Note: The PRD does not include stories for this setup.
-```
-
-**During the conversation phases, when integrations are mentioned:**
-- Phase 1-3: Note any integrations mentioned
-- Phase 4: Explicitly ask: "For [integration], should I include configuration stories, or treat it as a manual prerequisite?"
-- Phase 5: Include either stories OR a Prerequisites section based on user choice
-
-**Why this matters:** "Assume available" leads to PRDs that produce infrastructure scaffolding without actual capabilities - systems that technically "work" but don't deliver user value.
 
 ---
 
-## Example PRD (v2 Format)
+## prd.json Format
 
-```markdown
-# PRD: Task Priority System
-
-## 1. Problem Statement
-
-Users have many tasks but no way to indicate which ones matter most. They waste time scanning the full list to find urgent items. We need priority levels so users can focus on what's important.
-
-## 2. Goals
-
-- Users can mark tasks as high/medium/low priority
-- High-priority tasks are visually prominent
-- Users can filter to see only high-priority items
-- Priority persists across sessions
-
-## 3. User Journey
-
-1. User creates a task → defaults to medium priority
-2. User realizes task is urgent → clicks priority indicator → selects "high"
-3. Task card updates to show red priority badge
-4. Later, user wants to focus → clicks filter → selects "high priority only"
-5. List shows only high-priority tasks
-
-## 4. How It Works
-
+```json
+{
+  "project": "[Project Name]",
+  "description": "[Feature description]",
+  "testCommand": "[e.g., npm test]",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Set up test harness",
+      "description": "As a developer, I need test infrastructure so all future work is verified before commits.",
+      "acceptanceCriteria": [
+        "Test framework installed and configured",
+        "Unit test setup working (example test passes)",
+        "Integration test setup working (example test passes)",
+        "Test command documented",
+        "Typecheck passes",
+        "All tests pass"
+      ],
+      "testRequirements": [
+        "Example unit test runs and passes",
+        "Example integration test runs and passes"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "[Feature title]",
+      "description": "As a [user], I want [feature] so that [benefit].",
+      "acceptanceCriteria": [
+        "Specific verifiable criterion",
+        "Another criterion",
+        "Typecheck passes",
+        "All tests pass"
+      ],
+      "testRequirements": [
+        "Unit test: specific test case",
+        "Integration test: specific test case"
+      ],
+      "dependsOn": ["US-001"],
+      "integratesWith": ["US-003"],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
 ```
-User clicks priority → UI calls updateTask API → Database updates → UI reflects change
-                                                        ↓
-User clicks filter → URL params update → Query filters by priority → List re-renders
-```
 
-**Data flow:**
-- Priority stored in `tasks.priority` column (enum: high/medium/low)
-- Filter state stored in URL params (`?priority=high`)
-- No computed priority - always explicit user choice
+### JSON Generation Rules
 
-## 5. Key Concepts
+1. **Story sizing** - Each story completable in ONE context window
+   - Right: "Add a database column", "Add a UI component"
+   - Wrong: "Build entire dashboard", "Add authentication"
+   - Rule of thumb: If you can't describe it in 2-3 sentences, split it
 
-- **Priority levels:** high (red), medium (yellow), low (gray) - visual color coding
-- **Default priority:** new tasks start as medium (not high, to avoid alert fatigue)
+2. **Verifiable acceptance criteria** - No vague terms
+   - Good: "Button shows confirmation dialog before deleting"
+   - Bad: "Works correctly", "Good UX"
 
-## 6. User Stories
+3. **Required criteria on every story:**
+   - "Typecheck passes" (or equivalent: PHPStan, mypy, go vet, cargo check)
+   - "All tests pass"
 
-### US-001: Add priority column to database
-**Description:** As a developer, I need to store task priority so it persists across sessions.
+4. **UI stories additionally require:**
+   - "Verify in browser"
 
-**Acceptance Criteria:**
-- [ ] Add priority column: enum('high', 'medium', 'low') default 'medium'
-- [ ] Migration runs successfully
-- [ ] Existing tasks get 'medium' priority
-- [ ] Typecheck passes
-- [ ] **Integration:** API can read/write priority field (verified in US-002)
-
-**Integrates with:** US-002 (API), US-003 (UI display)
+5. **Split large features** - Break into focused, independent stories
 
 ---
 
-### US-002: CHECKPOINT - API can read/write priority
-**Description:** Verify the data layer works before building UI.
+## Output
 
-**Acceptance Criteria:**
-- [ ] GET /tasks returns priority field
-- [ ] PATCH /tasks/:id accepts priority update
-- [ ] Invalid priority value returns 400 error
-- [ ] Typecheck passes
-- [ ] **STOP if this fails** - fix data layer before building UI
+After completing all phases, generate:
 
-**Integrates with:** US-001 (database), US-003 (UI)
+1. `.ralph/PRD.md` - Full PRD document
+2. `.ralph/prd.json` - JSON for Ralph execution
 
----
-
-### US-003: Display priority badge on task cards
-**Description:** As a user, I want to see task priority at a glance.
-
-**Acceptance Criteria:**
-- [ ] Task card shows colored badge (red=high, yellow=medium, gray=low)
-- [ ] Badge visible without hover/click
-- [ ] Typecheck passes
-- [ ] Verify in browser
-- [ ] **Integration:** Badge updates when priority changes via US-004
-
-**Integrates with:** US-002 (reads priority), US-004 (updates priority)
-
----
-
-### US-004: Priority selector in task edit
-**Description:** As a user, I want to change task priority.
-
-**Acceptance Criteria:**
-- [ ] Dropdown in task edit modal with high/medium/low options
-- [ ] Current priority shown as selected
-- [ ] Selection calls API and updates badge immediately
-- [ ] Typecheck passes
-- [ ] Verify in browser
-- [ ] **Integration:** Changing priority updates filter results in US-005
-
-**Integrates with:** US-002 (API), US-003 (badge display), US-005 (filter)
-
----
-
-### US-005: Filter tasks by priority
-**Description:** As a user, I want to see only high-priority tasks when focusing.
-
-**Acceptance Criteria:**
-- [ ] Filter dropdown: All | High | Medium | Low
-- [ ] Filter stored in URL params (?priority=high)
-- [ ] Empty state when no tasks match
-- [ ] Typecheck passes
-- [ ] Verify in browser
-- [ ] **Integration:** End-to-end test: create task → set high priority → filter → task appears
-
-**Integrates with:** US-001 (data), US-004 (priority changes)
-
-## 7. Non-Goals
-
-- No priority-based notifications
-- No automatic priority based on due date
-- No priority inheritance for subtasks
-- No keyboard shortcuts (future enhancement)
-
-## 8. Open Questions
-
-- Should priority affect sort order within columns?
-```
+Ask the user to review both files before they run Ralph.
 
 ---
 
 ## Checklist
 
-Before saving the PRD:
+Before saving:
 
-- [ ] Completed all 4 phases of questions (Intent → Journey → Details → Architecture)
-- [ ] "How It Works" section explains the execution model clearly
-- [ ] Infrastructure stories come before feature stories
-- [ ] Validation checkpoints after first instance of repetitive patterns
-- [ ] Each story has integration criteria (not just local criteria)
-- [ ] Ambiguous terms replaced with precise language
-- [ ] Dependencies explicitly stated with "Depends on:" and "Integrates with:"
-- [ ] Non-goals clearly define what's out of scope
-- [ ] External integrations have either configuration stories OR explicit prerequisites (never "assume available")
-- [ ] Saved to `.ralph/PRD.md`
+- [ ] Completed Discovery phase (problem, users, scope, happy path, edge cases)
+- [ ] Completed Architecture & Test Strategy phase (tech stack + testing approach)
+- [ ] US-001 is test harness setup
+- [ ] Every story has "All tests pass" in acceptance criteria
+- [ ] Every story has specific test requirements
+- [ ] UI stories have "Verify in browser"
+- [ ] Story dependencies explicit with "Depends on:" and "Integrates with:"
+- [ ] No "assume available" for integrations
+- [ ] Stories are small enough for one context window
+- [ ] Both PRD.md and prd.json generated

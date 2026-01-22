@@ -76,15 +76,24 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   ITER_DURATION=$((SECONDS - ITER_START))
   ELAPSED=$((SECONDS - START_TIME))
 
-  # Check for completion signal in assistant text messages only (not in tool results)
-  if echo "$OUTPUT" | jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text // empty' 2>/dev/null | grep -q "<promise>COMPLETE</promise>"; then
-    echo ""
-    echo "═══════════════════════════════════════════════════════"
-    echo "  Ralph completed all tasks!"
-    echo "  Iterations: $i of $MAX_ITERATIONS"
-    echo "  Total time: $(format_duration $ELAPSED)"
-    echo "═══════════════════════════════════════════════════════"
-    exit 0
+  # Check for completion signal on its own line in assistant text messages (not tool results)
+  # The anchored regex prevents false positives from quoted/inline mentions of the signal
+  if echo "$OUTPUT" | jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text // empty' 2>/dev/null | grep -qE '^\s*<promise>COMPLETE</promise>\s*$'; then
+    # Verify PRD actually shows all stories complete (defense in depth)
+    INCOMPLETE=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE" 2>/dev/null || echo "999")
+    if [ "$INCOMPLETE" -eq 0 ]; then
+      echo ""
+      echo "═══════════════════════════════════════════════════════"
+      echo "  Ralph completed all tasks!"
+      echo "  Iterations: $i of $MAX_ITERATIONS"
+      echo "  Total time: $(format_duration $ELAPSED)"
+      echo "═══════════════════════════════════════════════════════"
+      exit 0
+    else
+      echo ""
+      echo "  Warning: Completion signal detected but $INCOMPLETE stories incomplete."
+      echo "  Continuing to next iteration..."
+    fi
   fi
 
   echo ""
