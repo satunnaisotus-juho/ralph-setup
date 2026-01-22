@@ -53,24 +53,25 @@ echo ""
 
 # Create directories
 echo "Creating directories..."
+mkdir -p "$TARGET_DIR/.ralph"
 mkdir -p "$TARGET_DIR/.claude/commands"
 
-# Copy core files
-echo "Copying core files..."
+# Copy core files to .ralph/
+echo "Copying core files to .ralph/..."
 
-cp "$SCRIPT_DIR/ralph.sh" "$TARGET_DIR/ralph.sh"
-chmod +x "$TARGET_DIR/ralph.sh"
-echo "  - ralph.sh (executable)"
+cp "$SCRIPT_DIR/ralph.sh" "$TARGET_DIR/.ralph/ralph.sh"
+chmod +x "$TARGET_DIR/.ralph/ralph.sh"
+echo "  - .ralph/ralph.sh (executable)"
 
-cp "$SCRIPT_DIR/prettify-ralph.sh" "$TARGET_DIR/prettify-ralph.sh"
-chmod +x "$TARGET_DIR/prettify-ralph.sh"
-echo "  - prettify-ralph.sh (executable)"
+cp "$SCRIPT_DIR/prettify-ralph.sh" "$TARGET_DIR/.ralph/prettify-ralph.sh"
+chmod +x "$TARGET_DIR/.ralph/prettify-ralph.sh"
+echo "  - .ralph/prettify-ralph.sh (executable)"
 
-cp "$SCRIPT_DIR/prompt.md" "$TARGET_DIR/prompt.md"
-echo "  - prompt.md"
+cp "$SCRIPT_DIR/prompt.md" "$TARGET_DIR/.ralph/prompt.md"
+echo "  - .ralph/prompt.md"
 
-cp "$SCRIPT_DIR/prd.json.example" "$TARGET_DIR/prd.json.example"
-echo "  - prd.json.example"
+cp "$SCRIPT_DIR/prd.json.example" "$TARGET_DIR/.ralph/prd.json.example"
+echo "  - .ralph/prd.json.example"
 
 # Copy Claude commands
 echo "Copying Claude commands..."
@@ -94,13 +95,13 @@ cp "$SCRIPT_DIR/.claude/settings.local.json" "$TARGET_DIR/.claude/settings.local
 echo "  - .claude/settings.local.json"
 
 # Create ralph-conventions.json with source path
-cat > "$TARGET_DIR/ralph-conventions.json" << EOF
+cat > "$TARGET_DIR/.ralph/ralph-conventions.json" << EOF
 {
   "ralphSetupPath": "$SCRIPT_DIR",
   "_comment": "Path to ralph-setup repo for saving examples. Update for your machine if needed."
 }
 EOF
-echo "  - ralph-conventions.json (update path for your machine if needed)"
+echo "  - .ralph/ralph-conventions.json (update path for your machine if needed)"
 
 # Update .gitignore
 echo "Updating .gitignore..."
@@ -138,7 +139,7 @@ if [ -n "$UNSECURED_HOST" ]; then
 
   # Get git remote URL (or ask for it)
   cd "$TARGET_DIR"
-  if git remote get-url origin &>/dev/null; then
+  if [ -d ".git" ] && git remote get-url origin &>/dev/null; then
     REMOTE_URL=$(git remote get-url origin)
   else
     echo "No git remote 'origin' configured."
@@ -151,7 +152,7 @@ if [ -n "$UNSECURED_HOST" ]; then
 
   REPO_NAME=$(basename "$TARGET_DIR")
   KEY_NAME="ralph-${REPO_NAME}"
-  KEY_PATH="${TARGET_DIR}/${KEY_NAME}"
+  KEY_PATH="${TARGET_DIR}/.ralph/${KEY_NAME}"
 
   # Generate keypair
   echo "Generating SSH deploy key..."
@@ -192,15 +193,16 @@ if [ -n "$UNSECURED_HOST" ]; then
   # Create project directory and copy Ralph files to remote
   REMOTE_PROJECT="${UNSECURED_PATH}/${REPO_NAME}"
   echo "Creating project directory on remote..."
+  ssh "$UNSECURED_HOST" "mkdir -p ${REMOTE_PROJECT}/.ralph"
   ssh "$UNSECURED_HOST" "mkdir -p ${REMOTE_PROJECT}/.claude/commands"
 
   echo "Copying Ralph files to remote..."
-  scp "$TARGET_DIR/ralph.sh" "${UNSECURED_HOST}:${REMOTE_PROJECT}/ralph.sh"
-  scp "$TARGET_DIR/prettify-ralph.sh" "${UNSECURED_HOST}:${REMOTE_PROJECT}/prettify-ralph.sh"
-  scp "$TARGET_DIR/prompt.md" "${UNSECURED_HOST}:${REMOTE_PROJECT}/prompt.md"
+  scp "$TARGET_DIR/.ralph/ralph.sh" "${UNSECURED_HOST}:${REMOTE_PROJECT}/.ralph/ralph.sh"
+  scp "$TARGET_DIR/.ralph/prettify-ralph.sh" "${UNSECURED_HOST}:${REMOTE_PROJECT}/.ralph/prettify-ralph.sh"
+  scp "$TARGET_DIR/.ralph/prompt.md" "${UNSECURED_HOST}:${REMOTE_PROJECT}/.ralph/prompt.md"
   scp "$TARGET_DIR/.claude/commands/"*.md "${UNSECURED_HOST}:${REMOTE_PROJECT}/.claude/commands/"
   scp "$TARGET_DIR/.claude/settings.local.json" "${UNSECURED_HOST}:${REMOTE_PROJECT}/.claude/settings.local.json"
-  ssh "$UNSECURED_HOST" "chmod +x ${REMOTE_PROJECT}/ralph.sh ${REMOTE_PROJECT}/prettify-ralph.sh"
+  ssh "$UNSECURED_HOST" "chmod +x ${REMOTE_PROJECT}/.ralph/ralph.sh ${REMOTE_PROJECT}/.ralph/prettify-ralph.sh"
   echo "  - Ralph files copied to remote"
 
   # Initialize git repo on remote with deploy key
@@ -227,7 +229,8 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>' && \
   cd "$(dirname "$TARGET_DIR")"  # Exit TARGET_DIR before deleting it
   rm -rf "$TARGET_DIR"
   git clone "$REMOTE_URL" "$TARGET_DIR"
-  mv "$TEMP_PUBKEY" "${TARGET_DIR}/${KEY_NAME}.pub"
+  mkdir -p "${TARGET_DIR}/.ralph"
+  mv "$TEMP_PUBKEY" "${TARGET_DIR}/.ralph/${KEY_NAME}.pub"
   echo "  - Repository cloned to $TARGET_DIR (using your default SSH credentials)"
 
   echo ""
@@ -240,7 +243,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>' && \
   echo "To run Ralph on the unsecured system:"
   echo "  ssh ${UNSECURED_HOST}"
   echo "  cd ${REMOTE_PROJECT}"
-  echo "  ./ralph.sh"
+  echo "  ./.ralph/ralph.sh"
 else
   # Print success message (local only)
   echo ""
@@ -252,11 +255,11 @@ else
   echo "     claude"
   echo "     /ralph-prd describe what you want to build"
   echo "  3. Convert PRD to Ralph format:"
-  echo "     /ralph-prd-to-json PRD.md"
+  echo "     /ralph-prd-to-json .ralph/PRD.md"
   echo "  4. Initialize git and push to GitHub:"
   echo "     /ralph-git-init"
   echo "  5. Run Ralph:"
-  echo "     ./ralph.sh"
+  echo "     ./.ralph/ralph.sh"
   echo ""
   echo "For remote deployment to an unsecured system, run:"
   echo "  ./init-ralph.sh $TARGET_DIR user@remote-host /remote/path"

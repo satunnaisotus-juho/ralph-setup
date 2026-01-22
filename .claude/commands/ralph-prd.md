@@ -469,4 +469,4 @@ Before saving the PRD:
 - [ ] Dependencies explicitly stated with "Depends on:" and "Integrates with:"
 - [ ] Non-goals clearly define what's out of scope
 - [ ] External integrations have either configuration stories OR explicit prerequisites (never "assume available")
-- [ ] Saved to `PRD.md`
+- [ ] Saved to `.ralph/PRD.md`

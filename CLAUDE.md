@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration spawns a fresh Claude Code instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
+Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration spawns a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/progress.txt`, and `.ralph/prd.json`.
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -13,28 +13,28 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 ### Ralph Agent Loop
 
 ```bash
-./ralph.sh [max_iterations]   # Run from directory with prd.json (default: 10 iterations)
+./.ralph/ralph.sh [max_iterations]   # Run from directory with .ralph/ (default: 10 iterations)
 ```
 
 ## Architecture
 
 ### Core Components
 
-1. **ralph.sh** - Bash orchestration loop that:
-   - Spawns fresh Claude Code instances with `prompt.md`
+1. **.ralph/ralph.sh** - Bash orchestration loop that:
+   - Spawns fresh Claude Code instances with `.ralph/prompt.md`
    - Checks for `<promise>COMPLETE</promise>` completion signal (must be on its own line)
    - Displays elapsed time and iteration duration
 
-2. **prompt.md** - Instructions for each Claude Code iteration defining the agent workflow
+2. **.ralph/prompt.md** - Instructions for each Claude Code iteration defining the agent workflow
 
 3. **.claude/commands/** - Claude Code command definitions:
    - `ralph-prd.md` - Generates structured PRD from feature description
-   - `ralph-prd-to-json.md` - Converts markdown PRD to `prd.json` format
+   - `ralph-prd-to-json.md` - Converts markdown PRD to `.ralph/prd.json` format
    - `ralph-analyze.md` - Interactive PRD feedback analysis (run after Ralph completes)
    - `ralph-fix-inconsistencies.md` - Audits Ralph system files for consistency
    - `ralph-git-init.md` - Initialize git repository and push to GitHub
 
-### PRD Format (`prd.json`)
+### PRD Format (`.ralph/prd.json`)
 
 ```json
 {
@@ -50,9 +50,9 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 }
 ```
 
-Note: The order of stories in prd.json does NOT imply priority. Ralph dynamically determines which story to work on next.
+Note: The order of stories in `.ralph/prd.json` does NOT imply priority. Ralph dynamically determines which story to work on next.
 
-### State Files
+### State Files (in `.ralph/`)
 
 - `prd.json` - Task list with user stories and `passes` status
 - `progress.txt` - Append-only learnings log
@@ -66,18 +66,18 @@ Stories must be completable in ONE context window:
 - Wrong: "Build entire dashboard", "Add authentication"
 
 ### Iteration Workflow
-1. Read `prd.json`, `progress.txt`, and `implementation-notes.md`
+1. Read `.ralph/prd.json`, `.ralph/progress.txt`, and `.ralph/implementation-notes.md`
 2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
-3. **Pre-implementation research**: Web search for best practices, update `implementation-notes.md`
+3. **Pre-implementation research**: Web search for best practices, update `.ralph/implementation-notes.md`
 4. Implement, run quality checks
-5. **Post-implementation**: Update `implementation-notes.md` with codebase learnings
-6. Update `prd.json` to mark `passes: true`, append to `progress.txt`
+5. **Post-implementation**: Update `.ralph/implementation-notes.md` with codebase learnings
+6. Update `.ralph/prd.json` to mark `passes: true`, append to `.ralph/progress.txt`
 7. Commit if passing (include all state files)
 8. **STOP** - one story per iteration (a fresh Claude instance handles the next)
 9. Output `<promise>COMPLETE</promise>` only when ALL stories pass
 
 ### Commit Format
-Commits should include detailed context. See `prompt.md` for the full template. Summary:
+Commits should include detailed context. See `.ralph/prompt.md` for the full template. Summary:
 ```
 feat: [Story ID] - [Story Title]
 
@@ -85,7 +85,7 @@ feat: [Story ID] - [Story Title]
 [What was implemented]
 
 ## Story Goal
-[The "why" from prd.json]
+[The "why" from .ralph/prd.json]
 
 ## Changes
 - [File]: [What changed]

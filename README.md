@@ -2,7 +2,7 @@
 
 ![Ralph](ralph.webp)
 
-Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration is a fresh Claude Code instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
+Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration is a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/progress.txt`, and `.ralph/prd.json`.
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -34,7 +34,7 @@ mkdir -p ~/.claude/commands
 cp .claude/commands/*.md ~/.claude/commands/
 ```
 
-Note: You'll still need to copy `ralph.sh` and `prompt.md` to each project manually.
+Note: You'll still need to copy the `.ralph/` directory (containing `ralph.sh` and `prompt.md`) to each project manually.
 
 ## Workflow
 
@@ -46,17 +46,17 @@ Use the PRD command to generate a detailed requirements document:
 /ralph-prd [your feature description]
 ```
 
-Answer the clarifying questions. The command saves output to `PRD.md`.
+Answer the clarifying questions. The command saves output to `.ralph/PRD.md`.
 
 ### 2. Convert PRD to Ralph format
 
 Use the Ralph command to convert the markdown PRD to JSON:
 
 ```
-/ralph-prd-to-json PRD.md
+/ralph-prd-to-json .ralph/PRD.md
 ```
 
-This creates `prd.json` with user stories structured for autonomous execution.
+This creates `.ralph/prd.json` with user stories structured for autonomous execution.
 
 ### 3. Initialize Git and Push to GitHub
 
@@ -71,7 +71,7 @@ This asks for your GitHub username and repository name, then creates an initial 
 ### 4. Run Ralph
 
 ```bash
-./ralph.sh [max_iterations]
+./.ralph/ralph.sh [max_iterations]
 ```
 
 Default is 10 iterations.
@@ -102,7 +102,7 @@ After deployment, run Ralph on the remote system:
 ```bash
 ssh user@remote-host
 cd /remote/path/your-project
-./ralph.sh
+./.ralph/ralph.sh
 ```
 
 ### Troubleshooting: Fix Inconsistencies
@@ -113,28 +113,28 @@ If Ralph is behaving unexpectedly, use the fix-inconsistencies command to audit 
 /ralph-fix-inconsistencies
 ```
 
-This checks `ralph.sh`, `prompt.md`, `prd.json`, and `PRD.md` for alignment issues and fixes them.
+This checks `.ralph/ralph.sh`, `.ralph/prompt.md`, `.ralph/prd.json`, and `.ralph/PRD.md` for alignment issues and fixes them.
 
 Ralph will:
 1. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
 2. Implement that single story
 3. Run quality checks (typecheck, tests)
 4. Commit if checks pass
-5. Update `prd.json` to mark story as `passes: true`
-6. Append learnings to `progress.txt`
+5. Update `.ralph/prd.json` to mark story as `passes: true`
+6. Append learnings to `.ralph/progress.txt`
 7. Repeat until all stories pass or max iterations reached
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `ralph.sh` | The bash loop that spawns fresh Claude Code instances |
-| `prompt.md` | Instructions given to each Claude Code instance |
-| `prd.json` | User stories with `passes` status (the task list) |
-| `prd.json.example` | Example PRD format for reference |
-| `progress.txt` | Append-only learnings for future iterations |
-| `prettify-ralph.sh` | Log prettifier for monitoring Ralph in real-time |
-| `init-ralph.sh` | Initializes Ralph in a new project directory |
+| `.ralph/ralph.sh` | The bash loop that spawns fresh Claude Code instances |
+| `.ralph/prompt.md` | Instructions given to each Claude Code instance |
+| `.ralph/prd.json` | User stories with `passes` status (the task list) |
+| `.ralph/prd.json.example` | Example PRD format for reference |
+| `.ralph/progress.txt` | Append-only learnings for future iterations |
+| `.ralph/prettify-ralph.sh` | Log prettifier for monitoring Ralph in real-time |
+| `init-ralph.sh` | Initializes Ralph in a new project directory (in ralph-setup) |
 | `CLAUDE.md` | Project context for Claude Code |
 | `AGENTS.md` | Instructions for Ralph agent iterations |
 | `.claude/commands/ralph-prd.md` | Command for generating PRDs |
@@ -148,8 +148,8 @@ Ralph will:
 
 Each iteration spawns a **new Claude Code instance** with clean context. The only memory between iterations is:
 - Git history (commits from previous iterations)
-- `progress.txt` (learnings and context)
-- `prd.json` (which stories are done)
+- `.ralph/progress.txt` (learnings and context)
+- `.ralph/prd.json` (which stories are done)
 
 ### Small Tasks
 
@@ -196,7 +196,7 @@ While Ralph is running, you can watch its progress in real-time with the log pre
 
 ```bash
 # In a separate terminal, tail the log with pretty formatting
-tail -f ralph-log.json | ./prettify-ralph.sh
+tail -f .ralph/ralph-log.json | ./.ralph/prettify-ralph.sh
 ```
 
 This shows a Claude Code-like view with:
@@ -209,7 +209,7 @@ This shows a Claude Code-like view with:
 You can also review a completed log:
 
 ```bash
-cat ralph-log.json | ./prettify-ralph.sh
+cat .ralph/ralph-log.json | ./.ralph/prettify-ralph.sh
 ```
 
 ## Debugging
@@ -218,10 +218,10 @@ Check current state:
 
 ```bash
 # See which stories are done
-cat prd.json | jq '.userStories[] | {id, title, passes}'
+cat .ralph/prd.json | jq '.userStories[] | {id, title, passes}'
 
 # See learnings from previous iterations
-cat progress.txt
+cat .ralph/progress.txt
 
 # Check git history
 git log --oneline -10
@@ -229,7 +229,7 @@ git log --oneline -10
 
 ## Customizing prompt.md
 
-Edit `prompt.md` to customize Ralph's behavior for your project:
+Edit `.ralph/prompt.md` to customize Ralph's behavior for your project:
 - Add project-specific quality check commands
 - Include codebase conventions
 - Add common gotchas for your stack

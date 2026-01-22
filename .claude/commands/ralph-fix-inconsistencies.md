@@ -1,5 +1,5 @@
 ---
-description: "Analyze Ralph system files for inconsistencies and fix them. Checks ralph.sh, prompt.md, prd.json, and PRD.md for alignment issues."
+description: "Analyze Ralph system files for inconsistencies and fix them. Checks .ralph/ files for alignment issues."
 ---
 
 # Ralph Inconsistency Checker
@@ -12,28 +12,28 @@ Analyze the Ralph autonomous agent system files and fix any inconsistencies betw
 
 Read and cross-reference these files:
 
-1. **ralph.sh** - The bash loop script that runs iterations
-2. **prompt.md** - Instructions given to each Ralph iteration
-3. **prd.json** - The structured task list with user stories
-4. **PRD.md** - The human-readable Product Requirements Document (if exists)
+1. **.ralph/ralph.sh** - The bash loop script that runs iterations
+2. **.ralph/prompt.md** - Instructions given to each Ralph iteration
+3. **.ralph/prd.json** - The structured task list with user stories
+4. **.ralph/PRD.md** - The human-readable Product Requirements Document (if exists)
 5. **.claude/commands/ralph-prd-to-json.md** - The PRD converter command
-6. **progress.txt** - The progress log
+6. **.ralph/progress.txt** - The progress log
 
 ---
 
 ## What to Check
 
 ### 1. File Format Consistency
-- Does `progress.txt` match the format that `ralph.sh` generates via `reset_progress_file()`?
-- Does the story count in `progress.txt` match the actual count in `prd.json`?
+- Does `.ralph/progress.txt` match the format that `.ralph/ralph.sh` generates via `reset_progress_file()`?
+- Does the story count in `.ralph/progress.txt` match the actual count in `.ralph/prd.json`?
 
 ### 2. Cross-File References
-- Does `prompt.md` reference the correct file names?
+- Does `.ralph/prompt.md` reference the correct file names?
 - Are acceptance criteria terminology consistent across files?
-- Does the story count in `prd.json` match what's documented in `PRD.md`?
+- Does the story count in `.ralph/prd.json` match what's documented in `.ralph/PRD.md`?
 
 ### 3. Completion Signal
-- Does the completion signal pattern in `ralph.sh` match what's documented in `prompt.md`?
+- Does the completion signal pattern in `.ralph/ralph.sh` match what's documented in `.ralph/prompt.md`?
 - Is the warning about not quoting the signal present?
 
 ---
