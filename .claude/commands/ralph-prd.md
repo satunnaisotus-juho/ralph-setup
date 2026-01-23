@@ -278,12 +278,78 @@ State dependencies clearly:
 
 ## Output
 
-After completing all phases, generate:
+After completing all phases, generate three files:
 
 1. `.ralph/PRD.md` - Full PRD document
 2. `.ralph/prd.json` - JSON for Ralph execution
+3. `.ralph/initiation-chat.md` - Record of the discovery conversation
 
-Ask the user to review both files before they run Ralph.
+### initiation-chat.md Format
+
+Capture the conversation that led to this PRD:
+
+```markdown
+# Initiation Chat
+
+**Date:** [YYYY-MM-DD]
+**Feature:** [Feature name]
+
+---
+
+## Original Request
+
+[What the user initially asked for - their first message or description]
+
+---
+
+## Discovery (Phase 1)
+
+### Problem & Goals
+- [Key points discussed]
+
+### Users
+- [Who this is for]
+
+### Scope Decisions
+- [What's in]
+- [What's explicitly out]
+
+### Happy Path
+[The ideal user flow as discussed]
+
+### Edge Cases & Error Handling
+- [What can go wrong]
+- [How errors should be handled]
+
+---
+
+## Architecture Decisions (Phase 2)
+
+### Tech Stack
+- [Framework, language, database choices and WHY]
+
+### Test Strategy
+- [Testing approach chosen and WHY]
+
+### Key Design Decisions
+- [Decision 1]: [Rationale]
+- [Decision 2]: [Rationale]
+
+---
+
+## Open Questions Resolved
+- Q: [Question raised during discussion]
+- A: [How it was resolved]
+
+---
+
+## Notes
+[Any other context that would help understand why the PRD looks the way it does]
+```
+
+**Why capture this:** When analyzing failed runs, the initiation chat shows whether the problem was in requirements gathering or in PRD generation. It's the "why" behind the PRD.
+
+Ask the user to review all three files before they run Ralph.
 
 ---
 
@@ -300,4 +366,6 @@ Before saving:
 - [ ] Story dependencies explicit with "Depends on:" and "Integrates with:"
 - [ ] No "assume available" for integrations
 - [ ] Stories are small enough for one context window
-- [ ] Both PRD.md and prd.json generated
+- [ ] PRD.md generated
+- [ ] prd.json generated
+- [ ] initiation-chat.md generated (captures discovery conversation)

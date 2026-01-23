@@ -5,6 +5,5 @@
 ralph-log.json
 logs/
 
-# Feedback loop examples (keep template/docs, ignore actual examples)
-examples/*/
-!examples/_template/
+# Dataset (local analysis data, not tracked)
+dataset/

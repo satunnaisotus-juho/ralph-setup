@@ -1,12 +1,14 @@
 ---
-description: "Analyze a completed Ralph implementation to identify PRD problems. Three-phase approach: explore first, compare second, validate third."
+description: "Analyze a completed Ralph implementation. Three-phase approach: explore first, compare second, validate third. Appends to dataset/runs.jsonl."
 ---
 
 # PRD Analysis (Three-Phase)
 
-**When to use:** After Ralph completes (or you stop it). Analyzes what went wrong to improve future PRDs and update LEARNINGS.md.
+**When to use:** After Ralph completes (or you stop it). Analyzes what went wrong to improve future PRDs.
 
 **Key principle:** Explore implementation BEFORE reading PRD. This prevents confirmation bias.
+
+**Output:** Appends structured entry to `dataset/runs.jsonl` + copies artifacts.
 
 ---
 
@@ -15,7 +17,7 @@ description: "Analyze a completed Ralph implementation to identify PRD problems.
 Gather upfront:
 
 1. **Project Path:** Path to implementation (e.g., `~/workspace/my-project`)
-2. **Example Name:** Name for `examples/<name>/` directory
+2. **Run ID:** Unique identifier (e.g., `my-project-2026-01-23`)
 
 Validate path exists and contains `.ralph/` directory.
 
@@ -69,7 +71,7 @@ For each major PRD section/story:
 
 ### 2c. Categorize Gaps
 
-Reference `examples/LEARNINGS.md` failure modes:
+Reference `dataset/failure-modes.md` for the taxonomy:
 
 - `ARCHITECTURE_MISSING` - PRD described files, not runtime behavior
 - `TESTS_NO_INFRA` - Required tests without test infrastructure
@@ -77,6 +79,8 @@ Reference `examples/LEARNINGS.md` failure modes:
 - `CHECKPOINTS_IGNORED` - Validation stories had no enforcement
 - `NO_CROSS_REFS` - Dependencies not stated at point of use
 - `PATTERN_NOT_VALIDATED` - Pattern replicated before testing
+- `MANUAL_CHECKPOINTS` - Checkpoints require human intervention
+- `PERMISSIONS_NOT_DECLARED` - Permission requirements hidden
 
 Identify which failure modes apply.
 
@@ -111,71 +115,85 @@ What was the main reason it failed? (Pick one or describe)
 In one sentence, what's the most important lesson from this project?
 ```
 
+### 3d. Improvements
+```
+What specific changes to ralph-prd or prompt.md would prevent this?
+```
+
 ---
 
 ## Output
 
-### 4a. Create Example Directory
+### 4a. Copy Artifacts
+
+Create artifact directory structure:
 
 ```
-examples/<name>/
-├── input/
-│   └── request.md          # Ask user for original request
-├── output/
-│   ├── PRD.md              # Copy from .ralph/
-│   ├── prd.json            # Copy from .ralph/
-│   └── progress.txt        # Copy if exists
-├── analysis/
-│   ├── problems.md         # Structured problems (see format below)
-│   └── improvements.md     # Optional, only if rewriting PRD
-└── metadata.json
+dataset/artifacts/<run-id>/
+├── implementation/           # From the project's .ralph/
+│   ├── PRD.md
+│   ├── prd.json
+│   ├── progress.txt
+│   ├── implementation-notes.md
+│   └── initiation-chat.md    # Discovery conversation that produced PRD
+└── snapshots/                # Tool versions at time of run
+    ├── ralph-prd.md
+    ├── prompt.md
+    └── ralph.sh
 ```
 
-### 4b. Write problems.md
+```bash
+# Create directories
+mkdir -p dataset/artifacts/<run-id>/implementation
+mkdir -p dataset/artifacts/<run-id>/snapshots
 
-Use this concise format:
+# Copy implementation artifacts (from project's .ralph/)
+cp <project-path>/.ralph/PRD.md dataset/artifacts/<run-id>/implementation/
+cp <project-path>/.ralph/prd.json dataset/artifacts/<run-id>/implementation/
+cp <project-path>/.ralph/progress.txt dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
+cp <project-path>/.ralph/implementation-notes.md dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
+cp <project-path>/.ralph/initiation-chat.md dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
 
-```markdown
-# PRD Problems Analysis
-
-**Project:** [name]
-**Analyzed:** [date]
-**Outcome:** [Working | Partial | Failed]
-**Failure Modes:** [list codes from LEARNINGS.md]
-
-## Summary
-
-[2-3 sentences: what happened, why it failed]
-
-## Problems
-
-### 1. [Problem Title]
-
-**Category:** [Failure mode code]
-**Description:** [What went wrong]
-**Evidence:** [Specific examples]
-**Impact:** [How this affected the outcome]
-
----
-
-[Repeat for each problem]
+# Copy tool snapshots (from ralph-setup repo)
+cp .claude/commands/ralph-prd.md dataset/artifacts/<run-id>/snapshots/
+cp .ralph/prompt.md dataset/artifacts/<run-id>/snapshots/
+cp .ralph/ralph.sh dataset/artifacts/<run-id>/snapshots/
 ```
 
-### 4c. Update LEARNINGS.md
+### 4b. Append to runs.jsonl
 
-Add a new entry to the Project Summaries section:
+Append ONE JSON line to `dataset/runs.jsonl`:
 
-```markdown
-### [project-name]
-
-- **Outcome:** [Working | Partial | Failed]
-- **Stories:** [X/Y passed]
-- **Failure Mode:** `[CODE]`
-- **Key Learning:** [One sentence from user]
-- **What Happened:** [2-3 sentences]
+```json
+{
+  "id": "<run-id>",
+  "created": "<YYYY-MM-DD>",
+  "versions": {
+    "ralph_prd": "<commit or version>",
+    "prompt_md": "<commit or version>",
+    "ralph_sh": "<commit or version>"
+  },
+  "input": {
+    "request_summary": "<1-2 sentence description of what was requested>",
+    "stories_total": <number>
+  },
+  "output": {
+    "stories_passed": <number>,
+    "outcome": "<working|partial|failed>"
+  },
+  "analysis": {
+    "works": <true|false>,
+    "failure_modes": ["<CODE1>", "<CODE2>"],
+    "learning": "<key learning from user>",
+    "improvements": ["<specific improvement 1>", "<specific improvement 2>"]
+  }
+}
 ```
 
-If new anti-patterns were discovered, add them to the Anti-Patterns section.
+**Important:** Use `jq` to validate JSON before appending:
+```bash
+echo '<json>' | jq . && echo '<json>' >> dataset/runs.jsonl
+```
 
 ---
 
@@ -184,19 +202,22 @@ If new anti-patterns were discovered, add them to the Anti-Patterns section.
 ```
 ## Analysis Complete
 
-**Example:** examples/<name>/
-**Outcome:** [Working | Partial | Failed]
-**Failure Modes:** [list]
-**Key Learning:** [one sentence]
+**Run ID:** <run-id>
+**Outcome:** <working|partial|failed>
+**Failure Modes:** <list>
+**Key Learning:** <one sentence>
 
-**Files created:**
-- examples/<name>/input/request.md
-- examples/<name>/output/PRD.md
-- examples/<name>/output/prd.json
-- examples/<name>/analysis/problems.md
-- examples/<name>/metadata.json
+**Artifacts captured:**
+- dataset/artifacts/<run-id>/implementation/  (PRD.md, prd.json, progress.txt, initiation-chat.md, etc.)
+- dataset/artifacts/<run-id>/snapshots/       (ralph-prd.md, prompt.md, ralph.sh)
 
-**LEARNINGS.md updated:** [Yes/No]
+**Appended to:** dataset/runs.jsonl
+
+**Query this run:**
+cat dataset/runs.jsonl | jq 'select(.id == "<run-id>")'
+
+**Query all failures:**
+cat dataset/runs.jsonl | jq 'select(.analysis.works == false)'
 ```
 
 ---
@@ -204,7 +225,10 @@ If new anti-patterns were discovered, add them to the Anti-Patterns section.
 ## Checklist
 
 - [ ] Phase 1 completed WITHOUT reading PRD (no confirmation bias)
-- [ ] Gaps categorized using LEARNINGS.md failure modes
+- [ ] Gaps categorized using failure-modes.md taxonomy
 - [ ] User confirmed outcome and failure mode
 - [ ] Key learning captured in user's words
-- [ ] LEARNINGS.md updated with new project entry
+- [ ] Improvements are specific and actionable
+- [ ] JSON validated with jq before appending
+- [ ] Implementation artifacts copied (PRD.md, prd.json, progress.txt, implementation-notes.md, initiation-chat.md)
+- [ ] Tool snapshots copied (ralph-prd.md, prompt.md, ralph.sh)
