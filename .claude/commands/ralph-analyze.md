@@ -1,310 +1,210 @@
 ---
-description: "Analyze a completed Ralph implementation to identify PRD problems and improvements. Interactive human-in-the-loop analysis for iterating on PRD quality."
+description: "Analyze a completed Ralph implementation to identify PRD problems. Three-phase approach: explore first, compare second, validate third."
 ---
 
-# PRD Feedback Analyzer
+# PRD Analysis (Three-Phase)
 
-**When to use:** After Ralph has completed all stories (or you've stopped it). This analyzes what went well/poorly to improve future PRDs.
+**When to use:** After Ralph completes (or you stop it). Analyzes what went wrong to improve future PRDs and update LEARNINGS.md.
 
-Analyze completed Ralph implementations to identify problems with the original PRD and generate actionable improvements. This is an interactive process - you ask questions, the human provides ground truth.
-
----
-
-## The Job
-
-1. Gather context from the implementation (.ralph/PRD.md, .ralph/prd.json, codebase, git history)
-2. Ask targeted questions to understand what went wrong
-3. Collaboratively identify problems and improvements
-4. Write validated analysis to the example directory
-
-**Key Principle:** You assist and structure. The human provides ground truth.
+**Key principle:** Explore implementation BEFORE reading PRD. This prevents confirmation bias.
 
 ---
 
 ## Input
 
-**This command runs from the ralph-setup directory.**
+Gather upfront:
 
-Gather the following information upfront:
+1. **Project Path:** Path to implementation (e.g., `~/workspace/my-project`)
+2. **Example Name:** Name for `examples/<name>/` directory
 
-1. **Project Path:**
-   ```
-   What is the path to the implementation you want to analyze?
-   (e.g., ~/workspace/my-project or /home/user/projects/feature-x)
-   ```
-
-   Validate the path exists and contains at least .ralph/PRD.md or .ralph/prd.json.
-
-2. **Example Name:**
-   ```
-   What name should I use for this example?
-   (e.g., my-feature-v1, auth-system-2)
-   ```
-
-   This will create `examples/<name>/` in ralph-setup.
-
-3. **Original Request:**
-   ```
-   What was the original request or context that led to this PRD?
-   (Paste the feature description, user story, or requirements that started this project)
-   ```
-
-   This will be saved to `input/request.md` in the example.
+Validate path exists and contains `.ralph/` directory.
 
 ---
 
-## Phase 1: Context Gathering
+## Phase 1: Implementation Analysis (NO PRD)
 
-1. **Read the artifacts from the provided project path:**
-   - `<project-path>/.ralph/PRD.md` (the original PRD)
-   - `<project-path>/.ralph/prd.json` (the converted stories)
-   - Explore the codebase structure at `<project-path>/`
-   - Check git history for patterns (optional)
-   - Read `<project-path>/.ralph/progress.txt` if it exists
-   - Read `<project-path>/.ralph/implementation-notes.md` if it exists
+**CRITICAL: Do NOT read the PRD during this phase.**
 
-2. **Summarize what you found:**
-   - Number of stories, high-level scope
-   - Types of work (UI, API, database, etc.)
-   - Any obvious structural observations
+### 1a. Explore the Codebase
 
-3. **Ask the opening question:**
-   ```
-   I've reviewed the PRD and implementation. Before I ask specific questions:
+Thoroughly explore the implementation:
+- Directory structure and file organization
+- Main entry points and how they connect
+- What dependencies are used
+- What the code actually does (not what it claims to do)
 
-   What was your overall experience with this PRD during implementation?
-   What stood out as problematic or friction-causing?
-   ```
+### 1b. Document Findings (Before PRD)
 
----
+Answer these questions based solely on code exploration:
 
-## Phase 2: Problem Identification (Interactive)
+1. **What does this system do?** (One paragraph)
+2. **What are the main components?** (List with brief descriptions)
+3. **Does it look complete?** (Yes/No with reasoning)
+4. **What's obviously missing or broken?** (List)
+5. **What patterns/conventions does it follow?** (List)
 
-Ask these questions one at a time or in small batches. Wait for human answers.
-
-### Story Sizing
-```
-Were any stories too large for a single context window?
-Which ones, and what made them too big?
-```
-
-### Acceptance Criteria
-```
-Which acceptance criteria were unclear, incomplete, or wrong?
-Were there things you had to figure out that should have been specified?
-```
-
-### Dependencies
-```
-Were there hidden dependencies between stories that caused problems?
-Did you have to implement stories in a different order than expected?
-```
-
-### Ambiguity
-```
-What specifications were ambiguous and led to guessing or rework?
-What assumptions did the PRD make that turned out to be wrong?
-```
-
-### Missing Requirements
-```
-What requirements were missing entirely?
-What did you have to add that wasn't in the PRD?
-```
-
-After the human answers, you may suggest additional problems based on:
-- Git history patterns (multiple commits per story suggests it was too big)
-- Codebase structure vs PRD organization
-- Common anti-patterns you notice
-
-**Always confirm your suggestions with the human:**
-```
-Based on [evidence], I suspect [problem]. Does this match your experience?
-```
+Write notes to yourself - you'll compare against PRD in Phase 2.
 
 ---
 
-## Phase 3: Improvement Suggestions (Collaborative)
+## Phase 2: PRD Comparison
 
-For each validated problem, work with the human to articulate improvements.
+**NOW read the PRD and prd.json.**
 
-**Structure each improvement as:**
-1. **Problem:** What went wrong
-2. **Evidence:** Specific examples from this implementation
-3. **Improvement:** How the PRD should have been written differently
-4. **Generalized Guidance:** Rule for future PRDs
+### 2a. Read PRD Artifacts
 
-**Ask the human:**
-```
-For [problem], how do you think the PRD should have been different?
-What would have prevented this issue?
-```
+From `<project-path>/.ralph/`:
+- `PRD.md` or equivalent
+- `prd.json`
+- `progress.txt` (if exists)
+- `implementation-notes.md` (if exists)
 
-Then help articulate and structure their input.
+### 2b. Compare: PRD vs Reality
+
+For each major PRD section/story:
+
+| PRD Promised | What Was Built | Gap |
+|--------------|----------------|-----|
+| ... | ... | ... |
+
+### 2c. Categorize Gaps
+
+Reference `examples/LEARNINGS.md` failure modes:
+
+- `ARCHITECTURE_MISSING` - PRD described files, not runtime behavior
+- `TESTS_NO_INFRA` - Required tests without test infrastructure
+- `ASSUME_AVAILABLE` - Deferred core functionality to "assume exists"
+- `CHECKPOINTS_IGNORED` - Validation stories had no enforcement
+- `NO_CROSS_REFS` - Dependencies not stated at point of use
+- `PATTERN_NOT_VALIDATED` - Pattern replicated before testing
+
+Identify which failure modes apply.
 
 ---
 
-## Phase 4: Output Generation
+## Phase 3: Human Validation
 
-### 4a. Create Example Directory Structure
+Ask the user these questions:
 
-Create the example directory at `examples/<name>/` with this structure:
+### 3a. Outcome Question
+```
+Did the project actually work when you tried to use it?
+- Yes, it works as intended
+- Partial - some parts work
+- No, it doesn't work despite stories passing
+```
+
+### 3b. If Partial or No
+```
+What was the main reason it failed? (Pick one or describe)
+- Built files but they don't integrate at runtime
+- Tests missing despite being required
+- Core functionality deferred to "assume available"
+- Checkpoints marked passed but weren't validated
+- Dependencies unclear, had to guess order
+- Pattern was wrong but replicated everywhere
+- Other: [describe]
+```
+
+### 3c. Key Learning
+```
+In one sentence, what's the most important lesson from this project?
+```
+
+---
+
+## Output
+
+### 4a. Create Example Directory
 
 ```
 examples/<name>/
 ├── input/
-│   └── request.md          # Original request from user (gathered in Input phase)
+│   └── request.md          # Ask user for original request
 ├── output/
-│   ├── PRD.md              # Copy from target project .ralph/
-│   ├── prd.json            # Copy from target project .ralph/
-│   └── progress.txt        # Copy from target project .ralph/ (if exists)
+│   ├── PRD.md              # Copy from .ralph/
+│   ├── prd.json            # Copy from .ralph/
+│   └── progress.txt        # Copy if exists
 ├── analysis/
-│   ├── problems.md         # Generated by this analysis
-│   └── improvements.md     # Generated by this analysis
-└── metadata.json           # Auto-generated
+│   ├── problems.md         # Structured problems (see format below)
+│   └── improvements.md     # Optional, only if rewriting PRD
+└── metadata.json
 ```
 
-### 4b. Copy Files from Target Project
+### 4b. Write problems.md
 
-Copy these files from `<project-path>/.ralph/` to `examples/<name>/output/`:
-- PRD.md
-- prd.json
-- progress.txt (if exists)
-- implementation-notes.md (if exists)
-
-### 4c. Write input/request.md
-
-Write the original request (gathered in Input phase) to `examples/<name>/input/request.md`.
-
-### 4d. Write metadata.json
-
-Write `examples/<name>/metadata.json`:
-```json
-{
-  "name": "<example-name>",
-  "created": "<YYYY-MM-DD>",
-  "source_project": "<absolute-path-to-project>",
-  "analysis_status": "analyzed"
-}
-```
-
-### 4e. Write problems.md
+Use this concise format:
 
 ```markdown
 # PRD Problems Analysis
 
 **Project:** [name]
 **Analyzed:** [date]
-**PRD Version:** [if known]
+**Outcome:** [Working | Partial | Failed]
+**Failure Modes:** [list codes from LEARNINGS.md]
 
 ## Summary
 
-[Brief overview of key problems found]
+[2-3 sentences: what happened, why it failed]
 
 ## Problems
 
 ### 1. [Problem Title]
 
-**Category:** [Story Sizing | Acceptance Criteria | Dependencies | Ambiguity | Missing Requirements]
-
+**Category:** [Failure mode code]
 **Description:** [What went wrong]
-
-**Evidence:** [Specific examples from implementation]
-
-**Impact:** [How this affected implementation]
+**Evidence:** [Specific examples]
+**Impact:** [How this affected the outcome]
 
 ---
 
 [Repeat for each problem]
 ```
 
-### 4f. Write improvements.md
+### 4c. Update LEARNINGS.md
+
+Add a new entry to the Project Summaries section:
 
 ```markdown
-# PRD Improvement Suggestions
+### [project-name]
 
-**Project:** [name]
-**Based on:** problems.md analysis
+- **Outcome:** [Working | Partial | Failed]
+- **Stories:** [X/Y passed]
+- **Failure Mode:** `[CODE]`
+- **Key Learning:** [One sentence from user]
+- **What Happened:** [2-3 sentences]
+```
 
-## Summary
-
-[Key themes and patterns in the improvements]
-
-## Improvements
-
-### 1. [Improvement Title]
-
-**Addresses Problem:** [Reference to problem]
-
-**Current PRD Approach:**
-> [Quote or describe what the PRD said]
-
-**Recommended Approach:**
-> [How it should have been written]
-
-**Generalized Rule:**
-[Guidance for future PRDs]
+If new anti-patterns were discovered, add them to the Anti-Patterns section.
 
 ---
 
-[Repeat for each improvement]
-
-## Action Items for /ralph-prd
-
-These improvements should be incorporated into the PRD generator:
-
-- [ ] [Specific change to make]
-- [ ] [Another change]
-```
-
-### 4g. Optionally Write PRD-improved.md
-
-If the human wants to see a revised PRD:
-```
-Would you like me to draft an improved version of the PRD incorporating these learnings?
-```
-
-If yes, rewrite the PRD with improvements applied, noting changes inline.
-
----
-
-## Output Summary
-
-When complete, provide:
+## Completion Summary
 
 ```
 ## Analysis Complete
 
-**Example created at:** examples/<name>/
+**Example:** examples/<name>/
+**Outcome:** [Working | Partial | Failed]
+**Failure Modes:** [list]
+**Key Learning:** [one sentence]
 
-**Files written:**
-- `input/request.md` - Original request
-- `output/PRD.md` - Copied from project .ralph/
-- `output/prd.json` - Copied from project .ralph/
-- `output/progress.txt` - Copied from project .ralph/ (if existed)
-- `analysis/problems.md` - [N] problems identified
-- `analysis/improvements.md` - [N] improvements suggested
-- `analysis/PRD-improved.md` - [if created]
-- `metadata.json` - Example metadata
+**Files created:**
+- examples/<name>/input/request.md
+- examples/<name>/output/PRD.md
+- examples/<name>/output/prd.json
+- examples/<name>/analysis/problems.md
+- examples/<name>/metadata.json
 
-**Key Themes:**
-- [Theme 1]
-- [Theme 2]
-
-**Next Steps:**
-- Review the improvements.md action items
-- Consider updating /ralph-prd command based on learnings
+**LEARNINGS.md updated:** [Yes/No]
 ```
 
 ---
 
 ## Checklist
 
-Before completing:
-
-- [ ] Read and understood the PRD and implementation
-- [ ] Asked questions and received human input
-- [ ] Problems are validated by human, not just auto-generated
-- [ ] Improvements include specific evidence from this implementation
-- [ ] Generalized rules are actionable for future PRDs
-- [ ] Output files are written (if requested)
+- [ ] Phase 1 completed WITHOUT reading PRD (no confirmation bias)
+- [ ] Gaps categorized using LEARNINGS.md failure modes
+- [ ] User confirmed outcome and failure mode
+- [ ] Key learning captured in user's words
+- [ ] LEARNINGS.md updated with new project entry
