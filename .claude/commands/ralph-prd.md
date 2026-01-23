@@ -34,6 +34,7 @@ Understand the full picture before making technical decisions.
 - **Happy path:** Walk through the ideal user flow step by step
 - **Edge cases:** What can go wrong? How should errors be handled?
 - **Integrations:** What external systems are involved?
+- **System requirements:** Does this need sudo? Network access? Special hardware? Long-running operations (>10 min)?
 
 **Quick codebase check:** If the directory has existing code, briefly scan for existing test infrastructure before proceeding.
 
@@ -90,10 +91,24 @@ Write two files:
 ## 1. Problem Statement
 What problem are we solving and why it matters.
 
-## 2. Goals
+## 2. Prerequisites
+System requirements and permissions needed. **Declare upfront, not when blocked.**
+
+- **Permissions:** [e.g., sudo required for package installation]
+- **Network:** [e.g., internet access for API calls]
+- **Hardware:** [e.g., microphone for voice features]
+- **Long-running ops:** [e.g., ISO build takes ~30 min - use background execution]
+
+Verification commands (run before starting):
+```bash
+# Example: verify sudo access
+sudo -n true && echo "sudo OK" || echo "sudo MISSING"
+```
+
+## 3. Goals
 Specific, measurable objectives (bullet list).
 
-## 3. How It Works
+## 4. How It Works
 Explain the execution model:
 - How do the pieces connect at runtime?
 - What calls what?
@@ -106,20 +121,20 @@ User action → Component A → Component B → Result
             Component C (async)
 ```
 
-## 4. Test Strategy
+## 5. Test Strategy
 - **Test framework:** [framework name]
 - **Test command:** `[e.g., npm test]`
 - **Unit tests:** [what they cover]
 - **Integration tests:** [what they cover]
 - **E2E tests:** [what they cover, if applicable]
 
-## 5. User Stories
+## 6. User Stories
 [See story format below]
 
-## 6. Non-Goals
+## 7. Non-Goals
 What this explicitly does NOT include.
 
-## 7. Open Questions
+## 8. Open Questions
 Remaining uncertainties.
 ```
 
@@ -357,8 +372,10 @@ Ask the user to review all three files before they run Ralph.
 
 Before saving:
 
-- [ ] Completed Discovery phase (problem, users, scope, happy path, edge cases)
+- [ ] Completed Discovery phase (problem, users, scope, happy path, edge cases, **system requirements**)
 - [ ] Completed Architecture & Test Strategy phase (tech stack + testing approach)
+- [ ] Prerequisites section lists all permissions (sudo, network, hardware) with verification commands
+- [ ] Long-running operations (>10 min) identified and noted in Prerequisites
 - [ ] US-001 is test harness setup
 - [ ] Every story has "All tests pass" in acceptance criteria
 - [ ] Every story has specific test requirements in acceptance criteria (e.g., "Unit test: validates input")

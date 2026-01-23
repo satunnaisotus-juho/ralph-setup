@@ -241,6 +241,33 @@ The Codebase Patterns section is the most valuable - it accumulates knowledge th
 - Keep changes focused and minimal
 - Follow existing code patterns
 
+## System Permissions
+
+**Sudo is available.** If a story requires elevated permissions (installing packages, modifying system files, etc.), use `sudo` directly. Don't skip stories because of permission issues.
+
+Check PRD.md for a Prerequisites section that lists required permissions. If sudo is listed, it's available.
+
+## Long-Running Operations
+
+**Claude Code has a 10-minute Bash timeout.** Commands that take longer will be killed.
+
+For operations that might exceed 10 minutes:
+1. **Run in background:** Use `nohup command > output.log 2>&1 &` and poll the log
+2. **Split the work:** Break into smaller chunks that complete within timeout
+3. **Use streaming output:** Commands with continuous output are less likely to timeout
+4. **Check progress periodically:** `tail -f output.log` to monitor
+
+Examples of potentially long operations:
+- Large builds (ISO creation, container builds)
+- Package installations with many dependencies
+- Database migrations on large datasets
+- Full test suites on large codebases
+
+If a story involves a known long-running operation, plan for it:
+- Document the expected duration in progress.txt
+- Use background execution with log monitoring
+- Consider splitting into preparation + execution stories
+
 ## Browser Testing (Required for Frontend Stories)
 
 For any story that changes UI, you MUST verify it works in the browser:
