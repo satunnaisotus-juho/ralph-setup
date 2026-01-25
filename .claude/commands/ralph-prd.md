@@ -233,7 +233,6 @@ State dependencies clearly:
 {
   "project": "[Project Name]",
   "description": "[Feature description]",
-  "testCommand": "[e.g., npm test]",
   "userStories": [
     {
       "id": "US-001",

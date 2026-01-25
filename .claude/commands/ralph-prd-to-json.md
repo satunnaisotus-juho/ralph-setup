@@ -24,7 +24,6 @@ Take a PRD (markdown file or text) and convert it to `.ralph/prd.json`.
 {
   "project": "[Project Name]",
   "description": "[Feature description from PRD title/intro]",
-  "testCommand": "[e.g., npm test]",
   "userStories": [
     {
       "id": "US-001",
@@ -175,7 +174,6 @@ Add ability to mark tasks with different statuses.
 {
   "project": "TaskApp",
   "description": "Task Status Feature - Track task progress with status indicators",
-  "testCommand": "npm test",
   "userStories": [
     {
       "id": "US-001",
@@ -257,4 +255,3 @@ Before writing prd.json, verify:
 - [ ] Every story has specific test requirements in acceptanceCriteria (e.g., "Unit test: validates input")
 - [ ] UI stories have "Verify in browser" as criterion
 - [ ] Acceptance criteria are verifiable (not vague)
-- [ ] `testCommand` is set at the top level
