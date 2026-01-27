@@ -152,6 +152,10 @@ get_tool_display() {
             local pattern=$(echo "$input" | jq -r '.pattern // ""' 2>/dev/null)
             echo "$pattern"
             ;;
+        WebSearch)
+            local query=$(echo "$input" | jq -r '.query // ""' 2>/dev/null)
+            printf '"%s"' "$(truncate "$query" 50)"
+            ;;
         *)
             echo ""
             ;;
