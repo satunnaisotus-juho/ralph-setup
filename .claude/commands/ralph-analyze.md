@@ -21,11 +21,33 @@ Gather upfront:
 
 Validate path exists and contains `.ralph/` directory.
 
+### Prerequisites
+
+Before starting analysis:
+
+```bash
+# Ensure you have the latest code
+cd <project-path>
+git pull
+```
+
+This ensures you're analyzing the actual final state, not a stale local copy.
+
 ---
 
 ## Phase 1: Implementation Analysis (NO PRD)
 
 **CRITICAL: Do NOT read the PRD during this phase.**
+
+**FORBIDDEN in Phase 1 - Do NOT read these files:**
+- `.ralph/PRD.md`
+- `.ralph/prd.json`
+- `.ralph/progress.txt`
+- `.ralph/implementation-notes.md`
+- `.ralph/initiation-chat.md`
+- Any file in the `.ralph/` directory
+
+**Start with source code only:** `find <project>/src -name "*.ts"` or equivalent for the language.
 
 ### 1a. Explore the Codebase
 
