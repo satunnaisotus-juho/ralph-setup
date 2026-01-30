@@ -29,6 +29,7 @@ Consider:
 2. **Current codebase state** - What's already implemented? Build on existing work.
 3. **Learnings from progress.txt** - What did previous iterations discover? Use this context.
 4. **Existing learnings** - What does implementation-notes.md say about relevant patterns?
+5. **Reference implementations** - What patterns do the reference repos suggest?
 
 Use your judgment. Schema/database work often needs to come before backend logic, which often needs to come before UI - but you decide based on the actual state of the code, not assumptions.
 
@@ -36,12 +37,16 @@ Use your judgment. Schema/database work often needs to come before backend logic
 
 After picking a story, before writing code:
 
-1. **Check existing learnings** - Review the Codebase Patterns section of implementation-notes.md
-2. **Web search** - Search for best practices specific to this implementation:
+1. **Check reference implementations** - Review `.ralph/reference-implementations.md`:
+   - What patterns did the reference repos use for similar features?
+   - Check the "Useful Files" for code to reference
+   - Repos are cached at `/tmp/ralph-refs-{project}/` (re-clone from URLs if missing)
+2. **Check existing learnings** - Review the Codebase Patterns section of implementation-notes.md
+3. **Web search** - Search for best practices specific to this implementation:
    - "[technology] [specific task] best practices"
    - "[framework] [pattern] recommended approach"
-3. **Document findings** - Add to implementation-notes.md under the story's section:
-   - 2-3 key insights
+4. **Document findings** - Add to implementation-notes.md under the story's section:
+   - 2-3 key insights (from references + web search)
    - 1-2 reference links
    - Note how codebase patterns might affect the approach
 
@@ -243,9 +248,38 @@ The Codebase Patterns section is the most valuable - it accumulates knowledge th
 
 ## System Permissions
 
-**Sudo is available.** If a story requires elevated permissions (installing packages, modifying system files, etc.), use `sudo` directly. Don't skip stories because of permission issues.
+**This agent runs with `--dangerously-skip-permissions`.** You have full system access including sudo. This means:
 
-Check PRD.md for a Prerequisites section that lists required permissions. If sudo is listed, it's available.
+1. **All Bash commands execute without confirmation** - no safety prompts will appear
+2. **Sudo is available** - use it when needed for package installation, system config, etc.
+3. **You can modify any file** - including system files, configs, and protected directories
+
+### Using Sudo Responsibly
+
+**Do:**
+- Use `sudo` for package installation (`sudo apt install`, `sudo dnf install`, etc.)
+- Use `sudo` for system service management (`sudo systemctl start/stop/enable`)
+- Use `sudo` for creating files in protected directories (`/etc`, `/usr/local`, etc.)
+- Document system changes in `.ralph/progress.txt` so future iterations know what was modified
+
+**Avoid:**
+- Running entire scripts as root when only specific commands need elevation
+- Using `sudo rm -rf` without double-checking paths
+- Modifying system files outside the scope of the current story
+- Installing packages not required by the PRD
+
+### Documenting System Changes
+
+When you make system-level changes (install packages, modify configs, start services), log them in `.ralph/progress.txt`:
+
+```
+[Iteration N] System changes:
+- Installed: nginx, certbot
+- Modified: /etc/nginx/sites-available/default
+- Enabled service: nginx
+```
+
+This helps future iterations understand the system state.
 
 ## Long-Running Operations
 

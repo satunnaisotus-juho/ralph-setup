@@ -57,6 +57,7 @@ Note: The order of stories in `.ralph/prd.json` does NOT imply priority. Ralph d
 - `prd.json` - Task list with user stories and `passes` status
 - `progress.txt` - Append-only learnings log
 - `implementation-notes.md` - Living document of research and codebase learnings (updated each iteration)
+- `reference-implementations.md` - GitHub repos analyzed for patterns (created during PRD generation)
 
 ## Key Patterns
 
@@ -68,7 +69,7 @@ Stories must be completable in ONE context window:
 ### Iteration Workflow
 1. Read `.ralph/prd.json`, `.ralph/progress.txt`, and `.ralph/implementation-notes.md`
 2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
-3. **Pre-implementation research**: Web search for best practices, update `.ralph/implementation-notes.md`
+3. **Pre-implementation research**: Check reference implementations, web search for best practices, update `.ralph/implementation-notes.md`
 4. Implement, run quality checks
 5. **Post-implementation**: Update `.ralph/implementation-notes.md` with codebase learnings
 6. Update `.ralph/prd.json` to mark `passes: true`, append to `.ralph/progress.txt`
