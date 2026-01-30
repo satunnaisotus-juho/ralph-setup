@@ -12,11 +12,12 @@ Create PRDs that prioritize **testability** from the start. Every project begins
 
 ## The Job
 
-A 3-phase conversation:
+A 4-phase conversation:
 
 1. **Phase 1: Discovery** - Understand the problem, users, scope, and edge cases
-2. **Phase 2: Architecture & Test Strategy** - Tech stack AND testing approach together
-3. **Phase 3: Generate PRD** - Write PRD.md and prd.json with test-first stories
+2. **Phase 2: Reference Implementation Search** - Find and analyze GitHub repos for patterns
+3. **Phase 3: Architecture & Test Strategy** - Tech stack AND testing approach together
+4. **Phase 4: Generate PRD** - Write PRD.md and prd.json with test-first stories
 
 **Important:** Do NOT start implementing. Create the PRD and get user approval first.
 
@@ -35,6 +36,8 @@ Understand the full picture before making technical decisions.
 - **Edge cases:** What can go wrong? How should errors be handled?
 - **Integrations:** What external systems are involved?
 - **System requirements:** Does this need sudo? Network access? Special hardware? Long-running operations (>10 min)?
+- **Distribution method:** How will users get this? (package registry, container registry, build from source, binary releases?)
+- **Distribution during project:** Will this be published during the project scope, or is it source-only for now?
 
 **Quick codebase check:** If the directory has existing code, briefly scan for existing test infrastructure before proceeding.
 
@@ -42,9 +45,97 @@ Understand the full picture before making technical decisions.
 
 ---
 
-## Phase 2: Architecture & Test Strategy
+## Phase 2: Reference Implementation Search
+
+Before architecture decisions, find real-world implementations to learn from.
+
+### 1. Search GitHub for References
+
+```bash
+gh search repos "[project-type] [tech-stack]" --limit 10 --json name,url,stargazersCount,updatedAt,description
+```
+
+Select 4-5 most relevant based on:
+- Stars > 50 (prefer > 500 for maturity)
+- Updated within 6 months
+- Appropriate license (MIT, Apache, BSD)
+- Relevant to project goals
+
+### 2. Clone to Temporary Directory
+
+```bash
+mkdir -p /tmp/ralph-refs-{project-name}
+git clone --depth 1 {repo-url} /tmp/ralph-refs-{project-name}/{repo-name}
+```
+
+### 3. Comprehensive Security Analysis
+
+**Phase A: Reputation Check**
+- Stars > 50 (prefer > 500)
+- Multiple contributors (not single-author)
+- Recent activity (commits in last 6 months)
+- Has security policy (SECURITY.md)
+- Known organization or verified maintainer
+
+**Phase B: Dependency Scan**
+```bash
+# Check for known vulnerabilities (run in cloned repo)
+npm audit --json 2>/dev/null || pip-audit --format json 2>/dev/null || true
+```
+
+**Phase C: Static Code Analysis**
+
+Automatic rejection (remove repo):
+- Base64/hex-encoded strings in source (except test fixtures, assets)
+- Binary blobs without corresponding source
+- postinstall/preinstall hooks that download or execute
+- References to sensitive paths: ~/.ssh, ~/.aws, ~/.gnupg, /etc/passwd
+- Hardcoded IPs/domains with outbound connections
+- Obfuscated/minified code without source maps
+- Environment variable exfiltration patterns
+
+**Phase D: Code Flow Analysis**
+
+Examine for dangerous patterns:
+- eval(), exec(), Function() constructor usage
+- child_process.exec/spawn, subprocess.run
+- Dynamic require/import from user input
+- Prototype pollution patterns
+- SQL/command injection vectors
+- Deserialization of untrusted data
+
+Document context if found (may be legitimate):
+- Network calls: document purpose and endpoints
+- File system access: document what files and why
+- Process spawning: document what commands
+
+**Phase E: Install Script Audit**
+- Review package.json scripts (postinstall, preinstall, prepare)
+- Check setup.py/pyproject.toml for install hooks
+- Verify Makefile targets don't execute unexpected code
+
+### 4. Analyze Best 2-3 Repos
+
+For each selected repo, document:
+- Purpose and relevance to this project
+- Key architectural patterns worth adopting
+- Useful code files to reference during implementation
+- Caveats or limitations
+
+### 5. Use Findings
+
+The reference implementations inform Phase 3 (Architecture):
+- Validate or challenge proposed tech stack
+- Identify proven patterns to adopt
+- Note anti-patterns to avoid
+- Reference specific files for implementation guidance
+
+---
+
+## Phase 3: Architecture & Test Strategy
 
 Tech decisions and testing decisions inform each other - make them together.
+**Use reference implementations from Phase 2 to validate architectural choices.**
 
 **Cover these areas:**
 
@@ -73,11 +164,16 @@ Based on the tech stack, determine:
   - User-facing flows → E2E tests
   - Edge cases and error handling → unit + integration
 
+### Reference Validation
+- Which patterns from reference repos should we adopt?
+- What approaches should we avoid (learned from references)?
+- Specific files to reference during implementation
+
 **Goal:** Clear technical approach AND clear testing approach before writing stories.
 
 ---
 
-## Phase 3: Generate PRD
+## Phase 4: Generate PRD
 
 Write two files:
 1. `.ralph/PRD.md` - Human-readable documentation
@@ -98,6 +194,7 @@ System requirements and permissions needed. **Declare upfront, not when blocked.
 - **Network:** [e.g., internet access for API calls]
 - **Hardware:** [e.g., microphone for voice features]
 - **Long-running ops:** [e.g., ISO build takes ~30 min - use background execution]
+- **Distribution:** [e.g., "Source-only (not published)" or "Published to {registry} as {package-name}"]
 
 Verification commands (run before starting):
 ```bash
@@ -225,6 +322,24 @@ State dependencies clearly:
 **Integrates with:** US-005 (API), US-008 (UI)
 ```
 
+### Rule 6: Fresh Clone Test
+Documentation stories (README, installation guides) must validate that documented paths actually work:
+
+- **Always required:** "Fresh clone test: clone repo to new directory, follow README exactly, verify it works"
+- **If NOT published:** README MUST include "Building from Source" section. Config examples use local paths, not package names.
+- **If published:** Only document published installation AFTER the publish/release story completes
+
+Example for unpublished project:
+```markdown
+### US-026: CLI and README
+**Acceptance Criteria:**
+- [ ] README includes "Building from Source" section with exact commands
+- [ ] README states distribution status (e.g., "Not yet published to npm")
+- [ ] Config examples use local paths that work after build
+- [ ] Fresh clone test: clone to clean directory, follow README, verify it works
+- [ ] All tests pass
+```
+
 ---
 
 ## prd.json Format
@@ -292,11 +407,12 @@ State dependencies clearly:
 
 ## Output
 
-After completing all phases, generate three files:
+After completing all phases, generate four files:
 
 1. `.ralph/PRD.md` - Full PRD document
 2. `.ralph/prd.json` - JSON for Ralph execution
 3. `.ralph/initiation-chat.md` - Record of the discovery conversation
+4. `.ralph/reference-implementations.md` - Reference repos for implementation guidance
 
 ### initiation-chat.md Format
 
@@ -337,13 +453,28 @@ Capture the conversation that led to this PRD:
 
 ---
 
-## Architecture Decisions (Phase 2)
+## Reference Implementations (Phase 2)
+
+### Repos Analyzed
+- [Repo 1]: [Why selected, key patterns found]
+- [Repo 2]: [Why selected, key patterns found]
+
+### Security Analysis
+- [Summary of security checks performed]
+
+---
+
+## Architecture Decisions (Phase 3)
 
 ### Tech Stack
 - [Framework, language, database choices and WHY]
 
 ### Test Strategy
 - [Testing approach chosen and WHY]
+
+### Reference Validation
+- [Which patterns adopted from reference repos]
+- [What approaches avoided based on references]
 
 ### Key Design Decisions
 - [Decision 1]: [Rationale]
@@ -363,7 +494,60 @@ Capture the conversation that led to this PRD:
 
 **Why capture this:** When analyzing failed runs, the initiation chat shows whether the problem was in requirements gathering or in PRD generation. It's the "why" behind the PRD.
 
-Ask the user to review all three files before they run Ralph.
+### reference-implementations.md Format
+
+```markdown
+# Reference Implementations
+
+Analyzed: {date}
+Project: {project name}
+
+## Selected References
+
+### 1. {repo-name}
+**URL:** {github-url}
+**Stars:** {count} | **Updated:** {date}
+**Security:** PASSED
+
+**Purpose:** {what this repo does, why it's relevant}
+
+**Key Patterns:**
+- {pattern with file path reference, e.g., "Auth middleware at src/middleware/auth.ts"}
+- {another pattern}
+
+**Useful Files:**
+- `path/to/file.ts` - {what it demonstrates}
+- `path/to/other.ts` - {what to reference}
+
+**Caveats:**
+- {limitations or things to adapt}
+
+---
+
+### 2. {next repo}
+...
+
+---
+
+## Security Analysis Summary
+
+**Selected repos:** All passed comprehensive security audit
+**Skipped repos:** {list with reasons}
+
+Analysis included:
+- Reputation check (stars, contributors, activity)
+- Dependency vulnerability scan
+- Static code analysis
+- Code flow analysis
+- Install script audit
+
+## Local Cache
+
+Repos cached at: `/tmp/ralph-refs-{project}/`
+Re-clone from URLs above if missing.
+```
+
+Ask the user to review all four files before they run Ralph.
 
 ---
 
@@ -372,7 +556,8 @@ Ask the user to review all three files before they run Ralph.
 Before saving:
 
 - [ ] Completed Discovery phase (problem, users, scope, happy path, edge cases, **system requirements**)
-- [ ] Completed Architecture & Test Strategy phase (tech stack + testing approach)
+- [ ] Completed Reference Implementation Search (4-5 repos searched, 2-3 selected, security verified)
+- [ ] Completed Architecture & Test Strategy phase (tech stack + testing approach, validated against references)
 - [ ] Prerequisites section lists all permissions (sudo, network, hardware) with verification commands
 - [ ] Long-running operations (>10 min) identified and noted in Prerequisites
 - [ ] US-001 is test harness setup
@@ -385,3 +570,7 @@ Before saving:
 - [ ] PRD.md generated
 - [ ] prd.json generated
 - [ ] initiation-chat.md generated (captures discovery conversation)
+- [ ] reference-implementations.md generated (repos analyzed and documented)
+- [ ] Distribution method documented in Prerequisites
+- [ ] If source-only: README has "Building from Source", no registry-dependent install commands
+- [ ] Documentation stories include "Fresh clone test" acceptance criterion
