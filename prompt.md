@@ -9,16 +9,17 @@ You are an autonomous coding agent working on a software project.
 3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
 4. Read `implementation-notes.md` if it exists (check Codebase Patterns section first)
 5. Pick the next user story to implement (see "Choosing the Next Story" below)
-6. **Research phase**: Web search for best practices for this specific task (see "Pre-Implementation Research")
-7. Update `implementation-notes.md` with research findings
-8. Implement that single user story
-9. Run quality checks and functional verification (see "Pre-Commit Checklist")
-10. Update `implementation-notes.md` with codebase learnings discovered (see "Post-Implementation Learnings")
-11. Update the PRD to set `passes: true` for the completed story
-12. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
-13. If ALL checks pass, commit ALL changes (including prd.json, progress.txt, and implementation-notes.md) using the commit format below
-14. Push the commit to the remote repository with: `git push`
-15. **STOP.** End your response now. Another iteration will handle the next story.
+6. **Validate prerequisites** (see "Prerequisite Validation" below)
+7. **Research phase**: Web search for best practices for this specific task (see "Pre-Implementation Research")
+8. Update `implementation-notes.md` with research findings
+9. Implement that single user story
+10. Run quality checks and functional verification (see "Pre-Commit Checklist")
+11. Update `implementation-notes.md` with codebase learnings discovered (see "Post-Implementation Learnings")
+12. Update the PRD to set `passes: true` for the completed story
+13. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
+14. If ALL checks pass, commit ALL changes (including prd.json, progress.txt, and implementation-notes.md) using the commit format below
+15. Push the commit to the remote repository with: `git push`
+16. **STOP.** End your response now. Another iteration will handle the next story.
 
 ## Choosing the Next Story
 
@@ -32,6 +33,30 @@ Consider:
 5. **Reference implementations** - What patterns do the reference repos suggest?
 
 Use your judgment. Schema/database work often needs to come before backend logic, which often needs to come before UI - but you decide based on the actual state of the code, not assumptions.
+
+## Checkpoint Gates
+
+Stories with "CHECKPOINT" in the title are **gates**, not suggestions:
+
+1. **Before implementing a story**, check if it depends on a checkpoint
+2. **If the checkpoint has `passes: false`** → you cannot proceed
+3. **If a checkpoint fails during implementation** → STOP, fix it, do not continue
+
+Checkpoints validate that patterns work end-to-end before replication. Skipping them leads to broken patterns replicated everywhere.
+
+To find checkpoints: `grep -i "checkpoint" prd.json`
+
+## Prerequisite Validation
+
+Before implementing, verify:
+
+1. **Dependencies satisfied** - All stories this depends on have `passes: true`
+2. **External dependencies available** - For each external dep:
+   - Available (verification command passes), OR
+   - Mocked (mock implementation exists in codebase)
+3. **Build still works** - If build system exists, verify build passes
+
+If any prerequisite fails → **STOP**. Document the blocker in progress.txt and do not proceed with implementation.
 
 ## Pre-Implementation Research
 
@@ -92,7 +117,20 @@ For stories that change behavior, verify acceptance criteria work in practice:
 - Test the specific feature/fix manually
 - For UI changes, verify in browser
 
-### 4. Final Review
+### 4. Build Validation
+
+If the project has a build step:
+- Build command must complete without errors
+- Build output must include all required assets
+
+### 5. Startup Check (if applicable)
+
+For stories that affect application startup:
+- Start the application briefly to verify it boots
+- Or use `--dry-run` / `--help` if available
+- Verify no immediate crashes or missing dependency errors
+
+### 6. Final Review
 
 ```bash
 git status   # Verify only expected files changed

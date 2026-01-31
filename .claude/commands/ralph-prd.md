@@ -35,6 +35,10 @@ Understand the full picture before making technical decisions.
 - **Happy path:** Walk through the ideal user flow step by step
 - **Edge cases:** What can go wrong? How should errors be handled?
 - **Integrations:** What external systems are involved?
+- **External integrations**: What external services/APIs does this need?
+  - For EACH external service: Get the exact interface (see Rule 7)
+  - If user says "assume available" → require interface spec before proceeding
+  - List: service name, required methods/endpoints, expected response types
 - **System requirements:** Does this need sudo? Network access? Special hardware? Long-running operations (>10 min)?
 - **Distribution method:** How will users get this? (package registry, container registry, build from source, binary releases?)
 - **Distribution during project:** Will this be published during the project scope, or is it source-only for now?
@@ -339,6 +343,75 @@ Example for unpublished project:
 - [ ] Fresh clone test: clone to clean directory, follow README, verify it works
 - [ ] All tests pass
 ```
+
+### Rule 7: External Dependency Interface Contracts
+
+If a PRD references ANY external service, you MUST get the exact interface:
+
+**During Discovery, for each external dependency:**
+1. Ask: "What is the exact interface?" (methods, types, endpoints)
+2. If user says "assume it exists" → REFUSE until they provide the spec
+3. Document the interface in PRD prerequisites
+
+**PRD Format:**
+```markdown
+## External Dependencies
+
+### [Service Name]
+**Required for:** US-XXX, US-YYY
+**Interface Contract:**
+```
+// Data types (language-agnostic)
+ServiceResponse:
+  - field1: string
+  - field2: number
+  - items: list of ItemType
+
+// Methods or endpoints
+method_name(param: string) -> ServiceResponse
+  - Description of what it does
+  - Error cases: [list error conditions]
+
+// For HTTP services:
+GET /endpoint
+  Request: { query_param: type }
+  Response: { field: type }
+  Errors: 404 if not found, 401 if unauthorized
+```
+**Mock story:** US-XXX creates mock implementing this interface
+**Verify real:** Health check command or equivalent
+```
+
+**Story requirement:** The FIRST story using an external dep MUST:
+- Create a mock/stub implementing the interface
+- Include acceptance criterion: "Mock [service] created and tests use it"
+
+**No hand-waving.** Every external dep needs a mockable contract before any dependent stories.
+
+### Rule 8: Application Startup Story
+
+Every PRD MUST include a story validating the application builds and starts.
+
+**Place this story:** After core implementation, before final integration test.
+
+**Template:**
+```markdown
+### US-0XX: Build and run application successfully
+**Acceptance Criteria:**
+- [ ] Build command completes without errors (`npm run build`, `go build`, `cargo build`, etc.)
+- [ ] Application starts without immediate crash
+- [ ] Basic functionality responds (health check, --version, or equivalent)
+- [ ] Application stops gracefully (SIGTERM handled)
+- [ ] All tests pass
+```
+
+**For different project types:**
+- **Web servers:** Health endpoint returns 200
+- **CLI tools:** `--help` or `--version` exits 0
+- **Libraries:** Build succeeds and exports work
+- **Scripts:** Main entry runs without import errors
+
+This catches packaging issues (missing assets, wrong paths, missing scripts) early.
 
 ---
 
