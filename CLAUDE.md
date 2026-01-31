@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration spawns a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/progress.txt`, and `.ralph/prd.json`.
+Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration spawns a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/prd.json`, and `.ralph/implementation-notes.md`.
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -55,8 +55,7 @@ Note: The order of stories in `.ralph/prd.json` does NOT imply priority. Ralph d
 ### State Files (in `.ralph/`)
 
 - `prd.json` - Task list with user stories and `passes` status
-- `progress.txt` - Append-only learnings log
-- `implementation-notes.md` - Living document of research and codebase learnings (updated each iteration)
+- `implementation-notes.md` - Compact codebase patterns (not per-story logs)
 - `reference-implementations.md` - GitHub repos analyzed for patterns (created during PRD generation)
 
 ## Key Patterns
@@ -67,15 +66,16 @@ Stories must be completable in ONE context window:
 - Wrong: "Build entire dashboard", "Add authentication"
 
 ### Iteration Workflow
-1. Read `.ralph/prd.json`, `.ralph/progress.txt`, and `.ralph/implementation-notes.md`
-2. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
-3. **Pre-implementation research**: Check reference implementations, web search for best practices, update `.ralph/implementation-notes.md`
-4. Implement, run quality checks
-5. **Post-implementation**: Update `.ralph/implementation-notes.md` with codebase learnings
-6. Update `.ralph/prd.json` to mark `passes: true`, append to `.ralph/progress.txt`
-7. Commit if passing (include all state files)
-8. **STOP** - one story per iteration (a fresh Claude instance handles the next)
-9. Output `<promise>COMPLETE</promise>` only when ALL stories pass
+1. Read `.ralph/prd.json` and `.ralph/implementation-notes.md`
+2. Read recent git history (`git log --oneline -10`) for context
+3. Dynamically pick a story where `passes: false` (based on dependencies and codebase state)
+4. **Pre-implementation research**: Check reference implementations, web search for best practices
+5. Implement, run quality checks
+6. **Post-implementation**: Update `.ralph/implementation-notes.md` with codebase learnings
+7. Update `.ralph/prd.json` to mark `passes: true`
+8. Commit if passing (include all state files)
+9. **STOP** - one story per iteration (a fresh Claude instance handles the next)
+10. Output `<promise>COMPLETE</promise>` only when ALL stories pass
 
 ### Commit Format
 Commits should include detailed context. See `.ralph/prompt.md` for the full template. Summary:

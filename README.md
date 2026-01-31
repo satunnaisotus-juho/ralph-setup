@@ -2,7 +2,7 @@
 
 ![Ralph](ralph.webp)
 
-Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration is a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/progress.txt`, and `.ralph/prd.json`.
+Ralph is an autonomous AI agent loop that runs [Claude Code](https://claude.ai/code) repeatedly until all PRD items are complete. Each iteration is a fresh Claude Code instance with clean context. Memory persists via git history, `.ralph/prd.json`, and `.ralph/implementation-notes.md`.
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -121,8 +121,7 @@ Ralph will:
 3. Run quality checks (typecheck, tests)
 4. Commit if checks pass
 5. Update `.ralph/prd.json` to mark story as `passes: true`
-6. Append learnings to `.ralph/progress.txt`
-7. Repeat until all stories pass or max iterations reached
+6. Repeat until all stories pass or max iterations reached
 
 ## Key Files
 
@@ -132,7 +131,7 @@ Ralph will:
 | `.ralph/prompt.md` | Instructions given to each Claude Code instance |
 | `.ralph/prd.json` | User stories with `passes` status (the task list) |
 | `.ralph/prd.json.example` | Example PRD format for reference |
-| `.ralph/progress.txt` | Append-only learnings for future iterations |
+| `.ralph/implementation-notes.md` | Compact codebase patterns for future iterations |
 | `.ralph/prettify-ralph.sh` | Log prettifier for monitoring Ralph in real-time |
 | `init-ralph.sh` | Initializes Ralph in a new project directory (in ralph-setup) |
 | `CLAUDE.md` | Project context for Claude Code |
@@ -148,8 +147,8 @@ Ralph will:
 
 Each iteration spawns a **new Claude Code instance** with clean context. The only memory between iterations is:
 - Git history (commits from previous iterations)
-- `.ralph/progress.txt` (learnings and context)
 - `.ralph/prd.json` (which stories are done)
+- `.ralph/implementation-notes.md` (codebase patterns)
 
 ### Small Tasks
 
@@ -211,8 +210,8 @@ Check current state:
 # See which stories are done
 cat .ralph/prd.json | jq '.userStories[] | {id, title, passes}'
 
-# See learnings from previous iterations
-cat .ralph/progress.txt
+# See codebase patterns
+cat .ralph/implementation-notes.md
 
 # Check git history
 git log --oneline -10

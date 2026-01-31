@@ -20,6 +20,6 @@ Ralph is an autonomous AI agent loop that runs Claude Code repeatedly until all 
 ## Patterns
 
 - Each iteration spawns a fresh Claude Code instance with clean context
-- Memory persists via git history, `progress.txt`, and `prd.json`
+- Memory persists via git history, `prd.json`, and `implementation-notes.md`
 - Stories should be small enough to complete in one context window
 - Always update AGENTS.md with discovered patterns for future iterations

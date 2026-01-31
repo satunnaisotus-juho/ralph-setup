@@ -6,27 +6,6 @@ set -e
 
 MAX_ITERATIONS=${1:-10}
 
-# Reset progress file with proper format
-reset_progress_file() {
-  local project_name=$(jq -r '.project // "Unknown"' "$PRD_FILE" 2>/dev/null || echo "Unknown")
-  local story_count=$(jq '.userStories | length' "$PRD_FILE" 2>/dev/null || echo "0")
-
-  cat > "$PROGRESS_FILE" << EOF
-# Ralph Progress Log - ${project_name}
-
-## Codebase Patterns
-<!-- Add reusable patterns discovered during implementation -->
-
-## Session Start
-Project: ${project_name}
-Stories: ${story_count} total
-Started: $(date)
-
----
-
-EOF
-}
-
 # Time formatting helper
 format_duration() {
   local seconds=$1
@@ -47,13 +26,7 @@ format_duration() {
 START_TIME=$SECONDS
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PRD_FILE="$SCRIPT_DIR/prd.json"
-PROGRESS_FILE="$SCRIPT_DIR/progress.txt"
 RALPH_LOG="$SCRIPT_DIR/ralph-log.json"
-
-# Initialize progress file if it doesn't exist
-if [ ! -f "$PROGRESS_FILE" ]; then
-  reset_progress_file
-fi
 
 # Initialize ralph log (overwrite any existing)
 > "$RALPH_LOG"
@@ -106,7 +79,7 @@ echo ""
 echo "═══════════════════════════════════════════════════════"
 echo "  Ralph reached max iterations ($MAX_ITERATIONS)"
 echo "  Total time: $(format_duration $ELAPSED)"
-echo "  Check $PROGRESS_FILE for status."
+echo "  Check prd.json for incomplete stories."
 echo "═══════════════════════════════════════════════════════"
 
 exit 1

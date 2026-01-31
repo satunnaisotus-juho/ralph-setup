@@ -17,15 +17,15 @@ Read and cross-reference these files:
 3. **.ralph/prd.json** - The structured task list with user stories
 4. **.ralph/PRD.md** - The human-readable Product Requirements Document (if exists)
 5. **.claude/commands/ralph-prd-to-json.md** - The PRD converter command
-6. **.ralph/progress.txt** - The progress log
+6. **.ralph/implementation-notes.md** - Codebase patterns (if exists)
 
 ---
 
 ## What to Check
 
 ### 1. File Format Consistency
-- Does `.ralph/progress.txt` match the format that `.ralph/ralph.sh` generates via `reset_progress_file()`?
-- Does the story count in `.ralph/progress.txt` match the actual count in `.ralph/prd.json`?
+- Does `.ralph/implementation-notes.md` follow the expected format from `.ralph/prompt.md`?
+- Does the story count in `.ralph/prd.json` match what's documented elsewhere?
 
 ### 2. Cross-File References
 - Does `.ralph/prompt.md` reference the correct file names?

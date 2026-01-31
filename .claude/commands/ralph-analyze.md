@@ -42,7 +42,6 @@ This ensures you're analyzing the actual final state, not a stale local copy.
 **FORBIDDEN in Phase 1 - Do NOT read these files:**
 - `.ralph/PRD.md`
 - `.ralph/prd.json`
-- `.ralph/progress.txt`
 - `.ralph/implementation-notes.md`
 - `.ralph/initiation-chat.md`
 - Any file in the `.ralph/` directory
@@ -80,7 +79,6 @@ Write notes to yourself - you'll compare against PRD in Phase 2.
 From `<project-path>/.ralph/`:
 - `PRD.md` or equivalent
 - `prd.json`
-- `progress.txt` (if exists)
 - `implementation-notes.md` (if exists)
 
 ### 2b. Compare: PRD vs Reality
@@ -155,7 +153,6 @@ dataset/artifacts/<run-id>/
 ├── implementation/           # From the project's .ralph/
 │   ├── PRD.md
 │   ├── prd.json
-│   ├── progress.txt
 │   ├── implementation-notes.md
 │   └── initiation-chat.md    # Discovery conversation that produced PRD
 └── snapshots/                # Tool versions at time of run
@@ -172,7 +169,6 @@ mkdir -p dataset/artifacts/<run-id>/snapshots
 # Copy implementation artifacts (from project's .ralph/)
 cp <project-path>/.ralph/PRD.md dataset/artifacts/<run-id>/implementation/
 cp <project-path>/.ralph/prd.json dataset/artifacts/<run-id>/implementation/
-cp <project-path>/.ralph/progress.txt dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
 cp <project-path>/.ralph/implementation-notes.md dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
 cp <project-path>/.ralph/initiation-chat.md dataset/artifacts/<run-id>/implementation/ 2>/dev/null || true
 
@@ -230,7 +226,7 @@ echo '<json>' | jq . && echo '<json>' >> dataset/runs.jsonl
 **Key Learning:** <one sentence>
 
 **Artifacts captured:**
-- dataset/artifacts/<run-id>/implementation/  (PRD.md, prd.json, progress.txt, initiation-chat.md, etc.)
+- dataset/artifacts/<run-id>/implementation/  (PRD.md, prd.json, implementation-notes.md, initiation-chat.md, etc.)
 - dataset/artifacts/<run-id>/snapshots/       (ralph-prd.md, prompt.md, ralph.sh)
 
 **Appended to:** dataset/runs.jsonl
@@ -252,5 +248,5 @@ cat dataset/runs.jsonl | jq 'select(.analysis.works == false)'
 - [ ] Key learning captured in user's words
 - [ ] Improvements are specific and actionable
 - [ ] JSON validated with jq before appending
-- [ ] Implementation artifacts copied (PRD.md, prd.json, progress.txt, implementation-notes.md, initiation-chat.md)
+- [ ] Implementation artifacts copied (PRD.md, prd.json, implementation-notes.md, initiation-chat.md)
 - [ ] Tool snapshots copied (ralph-prd.md, prompt.md, ralph.sh)

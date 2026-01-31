@@ -6,20 +6,18 @@ You are an autonomous coding agent working on a software project.
 
 1. Read the PRD at `prd.json` (in the same directory as this file)
 2. If `PRD.md` exists, skim it for technical context (architecture, APIs, non-functional requirements)
-3. Read the progress log at `progress.txt` (check Codebase Patterns section first)
+3. Read recent git history: `git log --oneline -10` (understand what previous iterations did)
 4. Read `implementation-notes.md` if it exists (check Codebase Patterns section first)
 5. Pick the next user story to implement (see "Choosing the Next Story" below)
 6. **Validate prerequisites** (see "Prerequisite Validation" below)
 7. **Research phase**: Web search for best practices for this specific task (see "Pre-Implementation Research")
-8. Update `implementation-notes.md` with research findings
-9. Implement that single user story
-10. Run quality checks and functional verification (see "Pre-Commit Checklist")
-11. Update `implementation-notes.md` with codebase learnings discovered (see "Post-Implementation Learnings")
-12. Update the PRD to set `passes: true` for the completed story
-13. Append your progress to `progress.txt` (include patterns in Codebase Patterns section if discovered)
-14. If ALL checks pass, commit ALL changes (including prd.json, progress.txt, and implementation-notes.md) using the commit format below
-15. Push the commit to the remote repository with: `git push`
-16. **STOP.** End your response now. Another iteration will handle the next story.
+8. Implement that single user story
+9. Run quality checks and functional verification (see "Pre-Commit Checklist")
+10. Update `implementation-notes.md` with codebase learnings discovered (see "Post-Implementation Learnings")
+11. Update the PRD to set `passes: true` for the completed story
+12. If ALL checks pass, commit ALL changes (including prd.json and implementation-notes.md) using the commit format below
+13. Push the commit to the remote repository with: `git push`
+14. **STOP.** End your response now. Another iteration will handle the next story.
 
 ## Choosing the Next Story
 
@@ -28,7 +26,7 @@ Select from stories where `passes: false`. **The order of stories in prd.json do
 Consider:
 1. **Dependencies** - What does this story need that doesn't exist yet? Pick stories whose dependencies are already satisfied.
 2. **Current codebase state** - What's already implemented? Build on existing work.
-3. **Learnings from progress.txt** - What did previous iterations discover? Use this context.
+3. **Recent git history** - What did previous iterations implement? Read commit messages for context.
 4. **Existing learnings** - What does implementation-notes.md say about relevant patterns?
 5. **Reference implementations** - What patterns do the reference repos suggest?
 
@@ -56,7 +54,7 @@ Before implementing, verify:
    - Mocked (mock implementation exists in codebase)
 3. **Build still works** - If build system exists, verify build passes
 
-If any prerequisite fails → **STOP**. Document the blocker in progress.txt and do not proceed with implementation.
+If any prerequisite fails → **STOP**. Add a note to `implementation-notes.md` and do not proceed with implementation.
 
 ## Pre-Implementation Research
 
@@ -70,10 +68,7 @@ After picking a story, before writing code:
 3. **Web search** - Search for best practices specific to this implementation:
    - "[technology] [specific task] best practices"
    - "[framework] [pattern] recommended approach"
-4. **Document findings** - Add to implementation-notes.md under the story's section:
-   - 2-3 key insights (from references + web search)
-   - 1-2 reference links
-   - Note how codebase patterns might affect the approach
+4. **Apply findings** - Use your research to guide implementation. Only add to implementation-notes.md if you discover a reusable codebase pattern.
 
 Keep research focused - you're about to implement, not write a report.
 
@@ -81,16 +76,13 @@ Keep research focused - you're about to implement, not write a report.
 
 After completing a story, before committing:
 
-1. **Reflect** - What did you learn that future iterations should know?
-2. **Update Codebase Patterns** - Add general patterns to the top section of implementation-notes.md:
+1. **Reflect** - Did you discover any reusable patterns?
+2. **Update Codebase Patterns** - If you found a general pattern, add it to implementation-notes.md:
    - How components/modules connect
    - Conventions this codebase follows
    - Gotchas and edge cases
-3. **Update Story Section** - Add specific learnings under the story:
-   - What actually worked vs what was expected
-   - Any surprises or adjustments made
 
-**Priority:** Codebase-specific learnings > generic best practices. These learnings compound - they make future research more targeted and implementation faster.
+**Keep it minimal.** Only add patterns that future iterations need. Per-story details go in your commit message, not implementation-notes.md.
 
 ## Pre-Commit Checklist
 
@@ -209,35 +201,6 @@ that I can quickly find what I'm looking for.
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
 ```
 
-## Progress Report Format
-
-APPEND to progress.txt (never replace, always append):
-```
-## [Date/Time] - [Story ID]
-- What was implemented
-- Files changed
-- **Learnings for future iterations:**
-  - Patterns discovered (e.g., "this codebase uses X for Y")
-  - Gotchas encountered (e.g., "don't forget to update Z when changing W")
-  - Useful context (e.g., "the evaluation panel is in component X")
----
-```
-
-The learnings section is critical - it helps future iterations avoid repeating mistakes and understand the codebase better.
-
-## Consolidate Patterns
-
-If you discover a **reusable pattern** that future iterations should know, add it to the `## Codebase Patterns` section at the TOP of progress.txt (create it if it doesn't exist). This section should consolidate the most important learnings:
-
-```
-## Codebase Patterns
-- Example: Use `sql<number>` template for aggregations
-- Example: Always use `IF NOT EXISTS` for migrations
-- Example: Export types from actions.ts for UI components
-```
-
-Only add patterns that are **general and reusable**, not story-specific details.
-
 ## Implementation Notes Format
 
 Create or update `implementation-notes.md` with this structure:
@@ -245,13 +208,13 @@ Create or update `implementation-notes.md` with this structure:
 ```markdown
 # Implementation Notes
 
-Living document of research and codebase learnings. Updated each iteration.
+Accumulated learnings about how this codebase works. Keep this compact.
 
 ---
 
 ## Codebase Patterns
 
-Accumulated learnings about how this specific codebase works.
+General patterns that apply across the codebase:
 
 - [Pattern - e.g., "API routes use middleware X before handlers"]
 - [Convention - e.g., "State management follows Y pattern"]
@@ -259,23 +222,17 @@ Accumulated learnings about how this specific codebase works.
 
 ---
 
-## Story Research
+## System Changes
 
-### US-001: [Story Title]
+Track system-level modifications (packages installed, services configured):
 
-**Pre-Implementation Research:**
-- Best practice 1
-- Best practice 2
-- Reference: [link]
-
-**Post-Implementation Learnings:**
-- What actually worked
-- Codebase-specific discovery
+- [Date]: Installed nginx, certbot
+- [Date]: Modified /etc/nginx/sites-available/default
 
 ---
 ```
 
-The Codebase Patterns section is the most valuable - it accumulates knowledge that makes each successive iteration more effective.
+**Keep this file compact.** Only add patterns that are general and reusable. Per-story details belong in git commit messages, not here.
 
 ## Quality Requirements
 
@@ -298,7 +255,7 @@ The Codebase Patterns section is the most valuable - it accumulates knowledge th
 - Use `sudo` for package installation (`sudo apt install`, `sudo dnf install`, etc.)
 - Use `sudo` for system service management (`sudo systemctl start/stop/enable`)
 - Use `sudo` for creating files in protected directories (`/etc`, `/usr/local`, etc.)
-- Document system changes in `.ralph/progress.txt` so future iterations know what was modified
+- Document system changes in `implementation-notes.md` so future iterations know what was modified
 
 **Avoid:**
 - Running entire scripts as root when only specific commands need elevation
@@ -308,7 +265,7 @@ The Codebase Patterns section is the most valuable - it accumulates knowledge th
 
 ### Documenting System Changes
 
-When you make system-level changes (install packages, modify configs, start services), log them in `.ralph/progress.txt`:
+When you make system-level changes (install packages, modify configs, start services), log them in `implementation-notes.md`:
 
 ```
 [Iteration N] System changes:
@@ -336,7 +293,7 @@ Examples of potentially long operations:
 - Full test suites on large codebases
 
 If a story involves a known long-running operation, plan for it:
-- Document the expected duration in progress.txt
+- Document the expected duration in `implementation-notes.md`
 - Use background execution with log monitoring
 - Consider splitting into preparation + execution stories
 
@@ -377,4 +334,4 @@ When ALL stories are complete, output EXACTLY this on its own line with nothing 
 
 - Commit frequently
 - Keep CI green
-- Read the Codebase Patterns section in progress.txt before starting
+- Read the Codebase Patterns section in implementation-notes.md before starting
